@@ -1,6 +1,13 @@
+import AppThemeProvider from "./contexts/theme/provider";
+import Header from "./components/header";
+import { AppRoutes } from "./routes";
+
 const App = () => {
   return (
-    <div>App</div>
+    <AppThemeProvider>
+      <Header />
+      <AppRoutes />
+    </AppThemeProvider>
   );
 };
 
