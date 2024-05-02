@@ -1,0 +1,1 @@
+export const moedas = ['R$', 'US$', 'AUD', 'CAD', '€', '£', '¥', 'CNY']

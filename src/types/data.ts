@@ -1,11 +1,11 @@
-type Parcela = {
+export type Parcela = {
   data: string;
   mesNome: string;
   valorParcela: number;
   parcela: string;
 };
 
-type Fatura = {
+export type Fatura = {
   data: string;
   valor_fatura: number;
   vezes: number;
@@ -49,7 +49,7 @@ export type ParcelasPorMesAno = {
   parcelas: ParcelaInfo[];
 };
 
-export type DadosAleatoriosDeClientes = {
+export type ValoresMinMax = {
   minMaxClientes: [number, number];
   minMaxFaturasPorCliente: [number, number];
   minMaxValorDasFaturas: [number, number];
