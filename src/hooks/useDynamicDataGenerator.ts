@@ -1,0 +1,145 @@
+import { Cliente, ValoresMinMax, Fatura, Parcela, ParcelasPorMesAno } from "../types/data";
+import { gerarNumeroDeCelularAleatorio } from "../helpers/randomCellNumber";
+import { gerarCorAleatoria } from "../helpers/randomColor";
+import { obterNomeDoMes } from "../helpers/getMouthName";
+import { obterValorEntreMinMax } from "../helpers/getRandomNumber";
+import { gerarNomeAleatorio } from "../helpers/generateRandomCliente";
+
+const gerarDataFatura = (): string => {
+  const agora = new Date();
+  const ano = agora.getFullYear();
+  const mes = agora.getMonth() + 1;
+  const dia = obterValorEntreMinMax(1, agora.getDate());
+  const hora = obterValorEntreMinMax(0, 23);
+  const minuto = obterValorEntreMinMax(0, 59);
+
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+};
+
+const gerarDataParcela = (numeroParcela: number): string => {
+  const agora = new Date();
+  const ano = agora.getFullYear();
+  const mes = agora.getMonth() + 1 + numeroParcela;
+  const mesFormatado = mes % 12 === 0 ? 12 : mes % 12;
+  const anoFormatado = ano + Math.floor(mes / 12);
+
+  return `${mesFormatado.toString().padStart(2, '0')}/${anoFormatado}`;
+};
+
+
+const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
+
+  const { minMaxClientes, minMaxFaturasPorCliente, minMaxValorDasFaturas, minMaxParcelasPorFatura } = valoresMinMax;
+
+  const [minClientes, maxClientes] = minMaxClientes;
+  const [minFaturasPorCliente, maxFaturasPorCliente] = minMaxFaturasPorCliente;
+  const [minValorDasFaturas, maxValorDasFaturas] = minMaxValorDasFaturas;
+  const [minParcelasPorFatura, maxParcelasPorFatura] = minMaxParcelasPorFatura;
+
+  const clientes: Cliente[] = [];
+
+  for (let i = 0; i < obterValorEntreMinMax(minClientes, maxClientes); i++) {
+    const nomeCliente = gerarNomeAleatorio();
+
+    const cliente: Cliente = {
+      nome: nomeCliente,
+      cor: gerarCorAleatoria(),
+      contatos: {
+        celuar: gerarNumeroDeCelularAleatorio(),
+        email: `${nomeCliente.toLowerCase()}@email.com`,
+      },
+      endereco: {
+        estado: 'MA',
+        cep: '0000-000',
+        cidade: 'Cidade',
+        bairro: 'Bairro',
+        rua: 'Rua',
+        numero: '0',
+      },
+      faturas: [],
+      historicoDePagamentos: [],
+    };
+
+    for (let j = 0; j < obterValorEntreMinMax(minFaturasPorCliente, maxFaturasPorCliente); j++) {
+      const dataFatura = gerarDataFatura();
+      const fatura: Fatura = {
+        data: dataFatura, 
+        valor_fatura: obterValorEntreMinMax(minValorDasFaturas, maxValorDasFaturas),
+        vezes: obterValorEntreMinMax(minParcelasPorFatura, maxParcelasPorFatura),
+        vencimento: +dataFatura[0],
+        parcelas: [],
+      };
+
+      for (let k = 0; k < fatura.vezes; k++) {
+        const dataParcela = gerarDataParcela(k);
+        const [mes, _] = dataParcela.split('/');
+
+        const parcela: Parcela = {
+          data: dataParcela,
+          mesNome: obterNomeDoMes(+mes),
+          valorParcela: Math.floor(fatura.valor_fatura / fatura.vezes),
+          parcela: `${k + 1}/${fatura.vezes}`,
+        };
+        fatura.parcelas.push(parcela);
+      };
+
+      cliente.faturas.push(fatura);
+    };
+
+    clientes.push(cliente);
+  };
+
+  return clientes;
+};
+
+const useGeraradorDeDadosDinamicos = (valoresMinMaxLocal: ValoresMinMax) => {
+
+  const dadosDinamicos = gerarDadosDeClientes(valoresMinMaxLocal);
+  const parcelasPorMes: ParcelasPorMesAno[] = [];
+
+  const agruparParcelasPorMesAno = (mes: number, ano: string) => {
+    const parcelasPorMesAno: ParcelasPorMesAno = {
+      mesNome: `${obterNomeDoMes(mes)} - ${ano}`,
+      data: `${mes}/${ano}`,
+      parcelas: [],
+    };
+
+    dadosDinamicos.forEach((cliente) => {
+      cliente.faturas.forEach((fatura) => {
+        fatura.parcelas.forEach((parcela) => {
+          const [parcelaMes, parcelaAno] = parcela.data.split('/');
+          if (parseInt(parcelaMes) === mes && parcelaAno === ano) {
+            parcelasPorMesAno.parcelas.push({
+              valorParcela: parcela.valorParcela,
+              parcela: parcela.parcela,
+              cliente: cliente.nome,
+              cor: cliente.cor
+            });
+          }
+        });
+      });
+    });
+
+    return parcelasPorMesAno;
+  }
+
+  const mesesAnos: Set<string> = new Set();
+  dadosDinamicos.forEach((cliente) => {
+    cliente.faturas.forEach((fatura) => {
+      fatura.parcelas.forEach((parcela) => {
+        const [mes, ano] = parcela.data.split('/');
+        mesesAnos.add(`${mes}/${ano}`);
+      });
+    });
+  });
+
+
+  mesesAnos.forEach((mesAno: string) => {
+    const [mes, ano] = mesAno.split('/');
+    parcelasPorMes.push(agruparParcelasPorMesAno(parseInt(mes), ano));
+  });
+
+  return { dadosDinamicos, parcelasPorMes };
+};
+
+export default useGeraradorDeDadosDinamicos;
