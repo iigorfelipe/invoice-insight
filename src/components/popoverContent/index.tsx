@@ -4,19 +4,33 @@ import Slider from '@mui/material/Slider';
 import { useState } from 'react';
 import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
 import { useAppTheme } from '../../contexts/theme';
+import { useSettings } from '../../contexts/settings';
+import { moedas } from '../../mocks/moedas';
+import { quantidadesIniciais } from '../../mocks/data';
+import { ValoresMinMax } from '../../types/data';
 
 
 type RangeSliderProps = {
-  label: string;
+  title: string;
+  label: keyof ValoresMinMax;
   min: number;
   max: number;
 };
 
-const RangeSlider = ({ label, min, max }: RangeSliderProps) => {
-  const [value, setValue] = useState([min, max]);
+const RangeSlider = ({ title, label, min, max }: RangeSliderProps) => {
+  const [sliderValue, setSliderValue] = useState([min, max]);
+  const { setValoresMinMaxLocal } = useSettings();
 
   const handleChange = (_event: Event, newValue: number | number[]) => {
-    setValue(newValue as number[]);
+
+    setSliderValue(newValue as number[]);
+
+    setValoresMinMaxLocal((prev) => {
+      return {
+        ...prev,
+        [label]: newValue
+      }
+    });
   };
 
   return (
@@ -31,25 +45,31 @@ const RangeSlider = ({ label, min, max }: RangeSliderProps) => {
       }}
     >
 
-      <Typography>{label}</Typography>
+      <Typography>{title}</Typography>
 
       <Slider
-        getAriaLabel={() => 'Temperature range'}
-        value={value}
+        value={sliderValue}
         onChange={handleChange}
         valueLabelDisplay="auto"
-        min={min}
-        max={max}
+        min={quantidadesIniciais[label][0]}
+        max={quantidadesIniciais[label][1]}
       />
     </Box>
   )
 };
 
-const moedas = ['R$', 'US$', 'AUD', 'CAD', '€', '£', '¥', 'CNY']
-
 const PopoverContent = () => {
   const [moedaEscolhida, setMoedaEscolhida] = useState(moedas[0]);
   const { toggleTheme } = useAppTheme();
+  const {
+    valoresMinMax: {
+      minMaxClientes,
+      minMaxFaturasPorCliente,
+      minMaxParcelasPorFatura,
+      minMaxValorDasFaturas
+    },
+    aplicarNovosValores,
+  } = useSettings();
 
   return (
     <Box
@@ -105,10 +125,30 @@ const PopoverContent = () => {
           gap: '10px'
         }}
       >
-        <RangeSlider label='Clientes' min={5} max={10} />
-        <RangeSlider label='Faturas por clientes' min={5} max={10} />
-        <RangeSlider label='Valor das faturas' min={5} max={10} />
-        <RangeSlider label='Parcelas por fatura' min={5} max={10} />
+        <RangeSlider
+          title='Clientes'
+          label='minMaxClientes'
+          min={minMaxClientes[0]}
+          max={minMaxClientes[1]}
+        />
+        <RangeSlider
+          title='Faturas por clientes'
+          label='minMaxFaturasPorCliente'
+          min={minMaxFaturasPorCliente[0]}
+          max={minMaxFaturasPorCliente[1]}
+        />
+        <RangeSlider
+          title='Valor das faturas'
+          label='minMaxValorDasFaturas'
+          min={minMaxValorDasFaturas[0]}
+          max={minMaxValorDasFaturas[1]}
+        />
+        <RangeSlider
+          title='Parcelas por fatura'
+          label='minMaxParcelasPorFatura'
+          min={minMaxParcelasPorFatura[0]}
+          max={minMaxParcelasPorFatura[1]}
+        />
       </Box>
 
       <Divider sx={{m: '-25px'}} />
@@ -163,10 +203,25 @@ const PopoverContent = () => {
           justifyContent: 'space-around',
         }}
       >
-        <Button sx={{width: '200px', borderRadius: '8px', height: '40px'}} variant='outlined'>
+        <Button
+          sx={{
+            width: '200px',
+            borderRadius: '8px',
+            height: '40px'
+          }}
+          variant='outlined'
+        >
           Gerar valores aleatórios
         </Button>
-        <Button sx={{width: '200px', borderRadius: '8px', height: '40px'}} variant='outlined'>
+        <Button
+          sx={{
+            width: '200px',
+            borderRadius: '8px',
+            height: '40px'
+          }}
+          variant='outlined'
+          onClick={aplicarNovosValores}
+        >
           Aplicar valores
         </Button>
       </Box>

@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import PieActiveArc from '../../components/PieChart';
 import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
-import parcelasOrdenadas from '../../mocks/data';
+import { useSettings } from '../../contexts/settings';
 
 const data = [
   { id: 0, value: 7327, color: 'purple' },
@@ -16,6 +16,8 @@ const data = [
 ];
 
 const Home = () => {
+  const { parcelas } = useSettings();
+
   return (
     <Box sx={{ p: '0px 15%' }}>
 
@@ -23,8 +25,8 @@ const Home = () => {
 
       <List sx={{ mt: '40px' }}>
         {
-          parcelasOrdenadas.map((item) => (
-            <ListItem key={item.data} sx={{display: 'flex', flexDirection: 'column', p: '0px', m: '0px'}}>
+          parcelas.map((item, index) => (
+            <ListItem key={item.data + index} sx={{display: 'flex', flexDirection: 'column', p: '0px', m: '0px'}}>
 
               <Divider sx={{width: '100%'}} />
 
@@ -34,10 +36,10 @@ const Home = () => {
 
                 <List sx={{ width: '80%' }}>
                   {
-                    item.parcelas.map((parcela, index) => (
+                    item.parcelas.map((parcela, index2) => (
 
                       <ListItem
-                        key={parcela.cliente + parcela.parcela}
+                        key={parcela.cliente + parcela.parcela + index + index2}
                         sx={{
                           display:"flex",
                           flexDirection: 'column',
