@@ -47,6 +47,7 @@ export type ParcelasPorMesAno = {
   mesNome: string;
   data: string;
   parcelas: ParcelaInfo[];
+  valorTotalDasParcelas: number;
 };
 
 export type ValoresMinMax = {

@@ -4,27 +4,7 @@ import { gerarCorAleatoria } from "../helpers/randomColor";
 import { obterNomeDoMes } from "../helpers/getMouthName";
 import { obterValorEntreMinMax } from "../helpers/getRandomNumber";
 import { gerarNomeAleatorio } from "../helpers/generateRandomCliente";
-
-const gerarDataFatura = (): string => {
-  const agora = new Date();
-  const ano = agora.getFullYear();
-  const mes = agora.getMonth() + 1;
-  const dia = obterValorEntreMinMax(1, agora.getDate());
-  const hora = obterValorEntreMinMax(0, 23);
-  const minuto = obterValorEntreMinMax(0, 59);
-
-  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
-};
-
-const gerarDataParcela = (numeroParcela: number): string => {
-  const agora = new Date();
-  const ano = agora.getFullYear();
-  const mes = agora.getMonth() + 1 + numeroParcela;
-  const mesFormatado = mes % 12 === 0 ? 12 : mes % 12;
-  const anoFormatado = ano + Math.floor(mes / 12);
-
-  return `${mesFormatado.toString().padStart(2, '0')}/${anoFormatado}`;
-};
+import { gerarDataFatura, gerarDataParcela } from "../helpers/generateDate";
 
 
 const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
@@ -102,6 +82,7 @@ const useGeraradorDeDadosDinamicos = (valoresMinMaxLocal: ValoresMinMax) => {
       mesNome: `${obterNomeDoMes(mes)} - ${ano}`,
       data: `${mes}/${ano}`,
       parcelas: [],
+      valorTotalDasParcelas: 0,
     };
 
     dadosDinamicos.forEach((cliente) => {
@@ -115,6 +96,8 @@ const useGeraradorDeDadosDinamicos = (valoresMinMaxLocal: ValoresMinMax) => {
               cliente: cliente.nome,
               cor: cliente.cor
             });
+
+            parcelasPorMesAno.valorTotalDasParcelas += parcela.valorParcela;
           }
         });
       });
