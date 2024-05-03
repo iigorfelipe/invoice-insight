@@ -1,15 +1,26 @@
 import { Box, Divider, IconButton, Typography } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { PieValueType } from '@mui/x-charts';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
+import { useSettings } from '../../contexts/settings';
 
-type PieChartDisplayProps = {
-  data: PieValueType[];
-};
 
-const PieChartDisplay = ({ data }: PieChartDisplayProps) => {
+const PieChartDisplay = () => {
+  const { parcelas } = useSettings();
+  
+  const valorTotalDoMesAtual = parcelas[0].valorTotalDasParcelas
+  let valorTotalMesesRestantes = 0;
+
+  for (let i = 1; i < parcelas.length; i++) {
+    valorTotalMesesRestantes += parcelas[i].valorTotalDasParcelas;
+  };
+
+  const data = [
+    { id: 0, value: valorTotalDoMesAtual, color: 'purple' },
+    { id: 1, value: valorTotalMesesRestantes, color: 'blue' },
+  ];
+
   return (
     <Box
       sx={{
@@ -18,17 +29,31 @@ const PieChartDisplay = ({ data }: PieChartDisplayProps) => {
       }}
     >
 
-      <Box sx={{
-        width: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center'
-      }}>
+      <Box
+        sx={{
+          width: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}
+      >
+        <Box
+          sx={{
+            color: data[0].color,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
 
-        <Box sx={{color: data[0].color, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <Box sx={{ display: 'flex', gap: '5px' }}>
+
             <FiberManualRecordIcon color="inherit" />
-            <Typography sx={{color: '#fff'}}>Abril</Typography>
+
+            <Typography sx={{color: '#fff'}}>
+              {parcelas[0].mesNome}
+            </Typography>
+
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -42,14 +67,21 @@ const PieChartDisplay = ({ data }: PieChartDisplayProps) => {
             </IconButton>
 
           </Box>
+
         </Box>
 
-        <Divider sx={{m: '10px 0px 10px 0px'}} />
+        <Divider sx={{ m: '10px 0px 10px 0px' }} />
 
-        <Box sx={{color: data[1].color, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+        <Box sx={{ color: data[1].color, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
           <Box sx={{ display: 'flex', gap: '5px' }}>
+
             <FiberManualRecordIcon color="inherit" />
-            <Typography sx={{color: '#fff'}}>Próximas faturas</Typography>
+  
+            <Typography sx={{color: '#fff'}}>
+              Próximas faturas
+            </Typography>
+
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -66,8 +98,7 @@ const PieChartDisplay = ({ data }: PieChartDisplayProps) => {
         </Box>
       </Box>
 
-
-      <Box sx={{ width: '250px'}}>
+      <Box>
         <PieChart
           series={[
             {
