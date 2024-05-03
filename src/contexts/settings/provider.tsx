@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { SettingsContext } from "./context";
-import { quantidadesIniciais } from "../../mocks/data";
+import { quantidadesIniciais, valorInicialParcelasPorMesAno } from "../../mocks/data";
 import useDynamicDataGenerator from "../../hooks/useDynamicDataGenerator";
 import { Cliente, ParcelasPorMesAno } from "../../types/data";
 
@@ -12,12 +12,11 @@ const SettingsProvider = ({ children }: Props) => {
   const [valoresMinMax, setValoresMinMax] = useState(quantidadesIniciais);
   const [valoresMinMaxLocal, setValoresMinMaxLocal] = useState(quantidadesIniciais);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [parcelas, setParcelas] = useState<ParcelasPorMesAno[]>([]);
+  const [parcelas, setParcelas] = useState<ParcelasPorMesAno[]>([valorInicialParcelasPorMesAno]);
 
   const aplicarNovosValores = () => {
     setValoresMinMax(valoresMinMaxLocal);
     const { dadosDinamicos, parcelasPorMes } = useDynamicDataGenerator(valoresMinMaxLocal);
-    console.log({ dadosDinamicos, parcelasPorMes })
     setClientes(dadosDinamicos);
     setParcelas(parcelasPorMes);
   };

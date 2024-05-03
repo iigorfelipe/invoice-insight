@@ -115,7 +115,7 @@ const PopoverContent = () => {
         </Box>
       </Box>
 
-      <Divider sx={{m: '-25px'}} />
+      <Divider sx={{ m: '-25px' }} />
       
       <Box
         sx={{
@@ -151,7 +151,7 @@ const PopoverContent = () => {
         />
       </Box>
 
-      <Divider sx={{m: '-25px'}} />
+      <Divider sx={{ m: '-25px' }} />
 
       <Box
         sx={{
@@ -195,7 +195,7 @@ const PopoverContent = () => {
 
       </Box>
 
-      <Divider sx={{m: '0px -25px'}} />
+      <Divider sx={{ m: '0px -25px' }} />
   
       <Box
         sx={{
