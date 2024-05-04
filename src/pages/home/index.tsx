@@ -15,7 +15,7 @@ const Home = () => {
   const { parcelas } = useSettings();
 
   return (
-    <Box sx={{ p: '0px 15%' }}>
+    <Box sx={{ p: '0px 15%', pt: '60px' }}>
 
       <PieActiveArc />
 
@@ -52,7 +52,7 @@ const Home = () => {
                     item.parcelas.map((parcela, index) => (
 
                       <ListItem
-                        key={item.mesNome + parcela.cliente}
+                        key={item.mesNome + index}
                         sx={{
                           display:"flex",
                           flexDirection: 'column',
