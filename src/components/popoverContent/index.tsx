@@ -197,34 +197,16 @@ const PopoverContent = () => {
 
       <Divider sx={{ m: '0px -25px' }} />
   
-      <Box
+      <Button
         sx={{
-          display: 'flex',
-          justifyContent: 'space-around',
+          borderRadius: '8px',
+          height: '40px'
         }}
+        variant='outlined'
+        onClick={aplicarNovosValores}
       >
-        <Button
-          sx={{
-            width: '200px',
-            borderRadius: '8px',
-            height: '40px'
-          }}
-          variant='outlined'
-        >
-          Gerar valores aleatórios
-        </Button>
-        <Button
-          sx={{
-            width: '200px',
-            borderRadius: '8px',
-            height: '40px'
-          }}
-          variant='outlined'
-          onClick={aplicarNovosValores}
-        >
           Aplicar valores
-        </Button>
-      </Box>
+      </Button>
 
     </Box>
   );
