@@ -23,14 +23,7 @@ const Header = () => {
 
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        p: '10px',
-        position: 'fixed',
-        width: '100%',
-      }}
-    >
+    <Box sx={{ display: 'flex', p: '10px' }}>
 
       {true && (
         <IconButton onClick={() => navigate('/')}>

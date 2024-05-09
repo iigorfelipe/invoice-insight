@@ -1,3 +1,5 @@
+import { useMemo, LegacyRef, ForwardRefExoticComponent, forwardRef } from 'react';
+import { VariableSizeList, VariableSizeListProps } from 'react-window';
 import {
   Avatar,
   Box,
@@ -7,72 +9,98 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import PieActiveArc from '../../components/PieChart';
-import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
+import { ParcelasPorMesAno } from '../../types/data';
 import { useSettings } from '../../contexts/settings';
+import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
+import PieActiveArc from '../../components/PieChart';
+
 
 const Home = () => {
   const { parcelas } = useSettings();
 
+  const itemSize = (index: number) => {
+    const parcela = parcelas[index];
+    const numParcelas = parcela.parcelas.length;
+    return numParcelas * 61;
+  };
+
+  const ListMemoized: ForwardRefExoticComponent<VariableSizeListProps<any>> = useMemo(() => {
+    return forwardRef((props, ref) => (
+      <VariableSizeList ref={ref as LegacyRef<VariableSizeList<any>>} {...props}/>
+    ));
+  }, [parcelas]);
+
+
   return (
-    <Box sx={{ p: '0px 15%', pt: '60px' }}>
+    <Box
+      sx={{
+        p: '0px 10%',
+        display: "flex",
+        flexDirection: 'column',
+        gap: '40px',
+      }}
+    >
 
       <PieActiveArc />
 
-      <List sx={{ mt: '40px' }}>
-        {
-          parcelas.map((item) => (
-            <ListItem
-              key={item.mesNome}
-              sx={{ display: 'flex', flexDirection: 'column', p: '0px', m: '0px' }}
-            >
+      <ListMemoized
+        itemCount={parcelas.length}
+        itemSize={itemSize}
+        height={350}
+        width='100%'
+      >
+        {({ index, style }) => {
+          const item: ParcelasPorMesAno = parcelas[index];
+          return (
 
-              <Divider sx={{width: '100%' }} />
+            <ListItem
+              style={style}
+              key={item.mesNome}
+              sx={{ display: 'flex', flexDirection: 'column', pl: '0px', m: '0px' }}
+            >
+              <Divider sx={{ width: '100%' }} />
 
               <Box sx={{ display: 'flex', width: '100%' }}>
 
-              <Box sx={{ width: '20%', m: '10px auto' }}>
+                <Box sx={{ width: '20%', m: '10px auto' }}>
 
-                <Tooltip
-                  title={
-                    <Typography>Total deste mês: {formatarValorParaMoedaBrasileira(item.valorTotalDasParcelas)}</Typography>
-                  }
-                >
+                  <Tooltip
+                    title={
+                      <Typography>
+                        Total deste mês: {formatarValorParaMoedaBrasileira(item.valorTotalDasParcelas)}
+                      </Typography>
+                    }
+                  >
+                    <Typography>{item.mesNome}</Typography>
+                  </Tooltip>
 
-                <Typography>
-                  {item.mesNome}
-                </Typography>
-
-                </Tooltip>
-      
-              </Box>
+                </Box>
 
                 <List sx={{ width: '80%' }}>
                   {
-                    item.parcelas.map((parcela, index) => (
+                    item.parcelas.map((parcela, index: number) => (
 
                       <ListItem
                         key={item.mesNome + index}
                         sx={{
-                          display:"flex",
+                          display: 'flex',
                           flexDirection: 'column',
                           width: '100%',
                           p: '0px',
                           m: '0px',
                         }}
                       >
-
                         <Box
                           sx={{
-                            display:"flex",
+                            display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            width: '100%'                          
+                            width: '100%',
                           }}
                         >
                           <Box sx={{ width: '50%', display: 'flex', alignItems: 'center', gap: '15px' }}>
 
-                            <Avatar sx={{background: parcela.cor}}>
+                            <Avatar sx={{ background: parcela.cor }}>
                               {parcela.cliente[0]}
                             </Avatar>
 
@@ -93,7 +121,7 @@ const Home = () => {
 
                         {
                           item.parcelas.length !== index + 1 && (
-                            <Divider sx={{width: '100%', m: '10px 0px 10px 0px' }} />
+                            <Divider sx={{ width: '100%', m: '10px 0px 10px 0px' }} />
                           )
                         }
 
@@ -103,11 +131,11 @@ const Home = () => {
                 </List>
 
               </Box>
-
             </ListItem>
-          ))
-        }
-      </List>
+          );
+        }}
+      </ListMemoized>
+
     </Box>
   );
 };
