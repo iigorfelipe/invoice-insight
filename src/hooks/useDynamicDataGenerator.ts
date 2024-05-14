@@ -6,13 +6,10 @@ import { obterValorEntreMinMax } from "../helpers/getRandomNumber";
 import { gerarNomeAleatorio } from "../helpers/generateRandomCliente";
 import { gerarDataFatura, gerarDataParcela } from "../helpers/generateDate";
 
-
 const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
-
-  const { minMaxClientes, minMaxFaturasPorCliente, minMaxValorDasFaturas, minMaxParcelasPorFatura } = valoresMinMax;
+  const { minMaxClientes, minMaxValorDasFaturas, minMaxParcelasPorFatura } = valoresMinMax;
 
   const [minClientes, maxClientes] = minMaxClientes;
-  const [minFaturasPorCliente, maxFaturasPorCliente] = minMaxFaturasPorCliente;
   const [minValorDasFaturas, maxValorDasFaturas] = minMaxValorDasFaturas;
   const [minParcelasPorFatura, maxParcelasPorFatura] = minMaxParcelasPorFatura;
 
@@ -40,31 +37,29 @@ const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
       historicoDePagamentos: [],
     };
 
-    for (let j = 0; j < obterValorEntreMinMax(minFaturasPorCliente, maxFaturasPorCliente); j++) {
-      const dataFatura = gerarDataFatura();
-      const fatura: Fatura = {
-        data: dataFatura, 
-        valor_fatura: obterValorEntreMinMax(minValorDasFaturas, maxValorDasFaturas),
-        vezes: obterValorEntreMinMax(minParcelasPorFatura, maxParcelasPorFatura),
-        vencimento: +dataFatura[0],
-        parcelas: [],
-      };
-
-      for (let k = 0; k < fatura.vezes; k++) {
-        const dataParcela = gerarDataParcela(k);
-        const [mes, _] = dataParcela.split('/');
-
-        const parcela: Parcela = {
-          data: dataParcela,
-          mesNome: obterNomeDoMes(+mes),
-          valorParcela: Math.floor(fatura.valor_fatura / fatura.vezes),
-          parcela: `${k + 1}/${fatura.vezes}`,
-        };
-        fatura.parcelas.push(parcela);
-      };
-
-      cliente.faturas.push(fatura);
+    const dataFatura = gerarDataFatura();
+    const fatura: Fatura = {
+      data: dataFatura, 
+      valor_fatura: obterValorEntreMinMax(minValorDasFaturas, maxValorDasFaturas),
+      vezes: obterValorEntreMinMax(minParcelasPorFatura, maxParcelasPorFatura),
+      vencimento: +dataFatura[0],
+      parcelas: [],
     };
+
+    for (let k = 0; k < fatura.vezes; k++) {
+      const dataParcela = gerarDataParcela(k);
+      const [mes, _] = dataParcela.split('/');
+
+      const parcela: Parcela = {
+        data: dataParcela,
+        mesNome: obterNomeDoMes(+mes),
+        valorParcela: Math.floor(fatura.valor_fatura / fatura.vezes),
+        parcela: `${k + 1}/${fatura.vezes}`,
+      };
+      fatura.parcelas.push(parcela);
+    };
+
+    cliente.faturas.push(fatura);
 
     clientes.push(cliente);
   };

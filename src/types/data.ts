@@ -52,7 +52,6 @@ export type ParcelasPorMesAno = {
 
 export type ValoresMinMax = {
   minMaxClientes: [number, number];
-  minMaxFaturasPorCliente: [number, number];
   minMaxValorDasFaturas: [number, number];
   minMaxParcelasPorFatura: [number, number];
 };

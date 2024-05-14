@@ -6,7 +6,6 @@ const maxClientes = opcoesDeClientes.length;
 
 export const quantidadesIniciais: ValoresMinMax = {
   minMaxClientes: [1, maxClientes],
-  minMaxFaturasPorCliente: [1, 4],
   minMaxValorDasFaturas: [100, 100000],
   minMaxParcelasPorFatura: [1, 36],
 };
