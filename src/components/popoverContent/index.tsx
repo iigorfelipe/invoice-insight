@@ -1,14 +1,14 @@
+import { useState } from 'react';
 import { Button, Divider, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-import { useState } from 'react';
 import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
+import { MuiColorInput } from 'mui-color-input';
 import { useAppTheme } from '../../contexts/theme';
 import { useSettings } from '../../contexts/settings';
 import { moedas } from '../../mocks/moedas';
 import { quantidadesIniciais } from '../../mocks/data';
 import { ValoresMinMax } from '../../types/data';
-
 
 type RangeSliderProps = {
   title: string;
@@ -42,6 +42,7 @@ const RangeSlider = ({ title, label, min, max }: RangeSliderProps) => {
         justifyContent: 'center',
         borderRadius: '12px',
         p: '10px 20px',
+        width: '100%',
       }}
     >
 
@@ -53,6 +54,7 @@ const RangeSlider = ({ title, label, min, max }: RangeSliderProps) => {
         valueLabelDisplay="auto"
         min={quantidadesIniciais[label][0]}
         max={quantidadesIniciais[label][1]}
+        step={label === 'minMaxValorDasFaturas' ? 100 : 1}
       />
     </Box>
   )
@@ -60,11 +62,14 @@ const RangeSlider = ({ title, label, min, max }: RangeSliderProps) => {
 
 const PopoverContent = () => {
   const [moedaEscolhida, setMoedaEscolhida] = useState(moedas[0]);
+
   const { toggleTheme } = useAppTheme();
+
   const {
+    coresDoGrafico,
+    setCoresDoGrafico,
     valoresMinMax: {
       minMaxClientes,
-      minMaxFaturasPorCliente,
       minMaxParcelasPorFatura,
       minMaxValorDasFaturas
     },
@@ -78,7 +83,6 @@ const PopoverContent = () => {
         flexDirection: 'column',
         width: '500px',
         borderRadius: '12px',
-        gap: '25px',
         p: '0px 25px 25px 25px'
       }}
     >
@@ -115,44 +119,66 @@ const PopoverContent = () => {
         </Box>
       </Box>
 
-      <Divider sx={{ m: '-25px' }} />
+      <Divider sx={{ m: '0px -25px' }} />
       
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gridAutoRows: '90px',
-          gap: '10px'
-        }}
-      >
-        <RangeSlider
-          title='Clientes'
-          label='minMaxClientes'
-          min={minMaxClientes[0]}
-          max={minMaxClientes[1]}
+      <Box sx={{ display: 'flex', justifyContent: 'space-around', p: '25px 0px' }}>
+
+        <MuiColorInput
+          label='Mês atual'
+          sx={{
+            width: '170px',
+            "& label.Mui-focused": {
+              color: '#fff'
+            },
+            "& .MuiOutlinedInput-root": {
+              "&:hover fieldset": {
+                borderColor: coresDoGrafico.corMesAtual
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: coresDoGrafico.corMesAtual
+              }
+            }
+          }}
+          format="hex8"
+          value={coresDoGrafico.corMesAtual}        
+          onChange={(value) => setCoresDoGrafico((prevColors) => {
+            return {
+              ...prevColors,
+              corMesAtual: value
+            }
+          })}
         />
-        <RangeSlider
-          title='Faturas por clientes'
-          label='minMaxFaturasPorCliente'
-          min={minMaxFaturasPorCliente[0]}
-          max={minMaxFaturasPorCliente[1]}
+
+        <MuiColorInput
+          label='Próximas faturas'
+          sx={{
+            width: '170px',
+            "& label.Mui-focused": {
+              color: '#fff'
+            },
+            "& .MuiOutlinedInput-root": {
+              "&:hover fieldset": {
+                borderColor: coresDoGrafico.corProximasFaturas
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: coresDoGrafico.corProximasFaturas
+              }
+            }
+          }}
+          format="hex8"
+          value={coresDoGrafico.corProximasFaturas}
+          onChange={(value) => setCoresDoGrafico((prevColors) => {
+            return {
+              ...prevColors,
+              corProximasFaturas: value
+            }
+          })}
         />
-        <RangeSlider
-          title='Valor das faturas'
-          label='minMaxValorDasFaturas'
-          min={minMaxValorDasFaturas[0]}
-          max={minMaxValorDasFaturas[1]}
-        />
-        <RangeSlider
-          title='Parcelas por fatura'
-          label='minMaxParcelasPorFatura'
-          min={minMaxParcelasPorFatura[0]}
-          max={minMaxParcelasPorFatura[1]}
-        />
+
       </Box>
 
-      <Divider sx={{ m: '-25px' }} />
-
+      <Divider sx={{ m: '0px -25px' }} />
+  
       <Box
         sx={{
           display: 'flex',
@@ -160,7 +186,7 @@ const PopoverContent = () => {
           borderRadius: '12px',
           alignItems: 'center',
           justifyContent: 'center',
-          p: '10px 10px 15px 10px',
+          p: '25px 0px',
           gap: '10px'
         }}
       >
@@ -196,7 +222,43 @@ const PopoverContent = () => {
       </Box>
 
       <Divider sx={{ m: '0px -25px' }} />
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          p: '25px 0px'
+        }}
+      >
+        <Box sx={{ display: 'flex' }}>
+          <RangeSlider
+            title='Clientes'
+            label='minMaxClientes'
+            min={minMaxClientes[0]}
+            max={minMaxClientes[1]}
+          />
+
+          <Box sx={{ m: '0px 5px' }} />
+
+          <RangeSlider
+            title='Parcelas por fatura'
+            label='minMaxParcelasPorFatura'
+            min={minMaxParcelasPorFatura[0]}
+            max={minMaxParcelasPorFatura[1]}
+          />
   
+        </Box>
+
+        <RangeSlider
+          title='Valor das faturas'
+          label='minMaxValorDasFaturas'
+          min={minMaxValorDasFaturas[0]}
+          max={minMaxValorDasFaturas[1]}
+        />
+      </Box>
+
+
       <Button
         sx={{
           borderRadius: '8px',

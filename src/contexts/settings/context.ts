@@ -1,6 +1,11 @@
 import { createContext } from "react";
 import { Cliente, ValoresMinMax, ParcelasPorMesAno } from "../../types/data";
-import { quantidadesIniciais } from "../../mocks/data";
+import { coresIniciaisDoGrafico, quantidadesIniciais } from "../../mocks/data";
+
+export type CoresDoGrafico = {
+  corMesAtual: string;
+  corProximasFaturas: string;
+};
 
 export type DefaultSettingsContext = {
   valoresMinMax: ValoresMinMax;
@@ -16,6 +21,11 @@ export type DefaultSettingsContext = {
   setParcelas: React.Dispatch<React.SetStateAction<ParcelasPorMesAno[]>>;
 
   aplicarNovosValores: () => void;
+
+  coresDoGrafico: CoresDoGrafico;
+
+  setCoresDoGrafico: React.Dispatch<React.SetStateAction<CoresDoGrafico>>;
+
 };
 
 export const defaultSettingsContext: DefaultSettingsContext = {
@@ -31,7 +41,10 @@ export const defaultSettingsContext: DefaultSettingsContext = {
   parcelas: [],
   setParcelas: () => {},
 
-  aplicarNovosValores: () => {}
+  aplicarNovosValores: () => {},
+
+  coresDoGrafico: coresIniciaisDoGrafico,
+  setCoresDoGrafico: () => {}
 };
 
 export const SettingsContext = createContext<DefaultSettingsContext>(defaultSettingsContext);

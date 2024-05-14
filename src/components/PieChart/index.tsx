@@ -7,7 +7,7 @@ import { useSettings } from '../../contexts/settings';
 
 
 const PieChartDisplay = () => {
-  const { parcelas } = useSettings();
+  const { parcelas, coresDoGrafico } = useSettings();
   
   const valorTotalDoMesAtual = parcelas[0].valorTotalDasParcelas
   let valorTotalMesesRestantes = 0;
@@ -17,8 +17,8 @@ const PieChartDisplay = () => {
   };
 
   const data = [
-    { id: 0, value: valorTotalDoMesAtual, color: 'purple' },
-    { id: 1, value: valorTotalMesesRestantes, color: 'blue' },
+    { id: 0, value: valorTotalDoMesAtual, color: coresDoGrafico.corMesAtual },
+    { id: 1, value: valorTotalMesesRestantes, color: coresDoGrafico.corProximasFaturas },
   ];
 
   return (

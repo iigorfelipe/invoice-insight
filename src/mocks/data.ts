@@ -20,3 +20,8 @@ export const valorInicialParcelasPorMesAno = {
   parcelas: [],
   valorTotalDasParcelas: 0
 };
+
+export const coresIniciaisDoGrafico = {
+  corMesAtual: 'purple',
+  corProximasFaturas: 'blue'
+};
