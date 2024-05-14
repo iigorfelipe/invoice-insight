@@ -1,5 +1,5 @@
-import { useMemo, LegacyRef, ForwardRefExoticComponent, forwardRef } from 'react';
-import { VariableSizeList, VariableSizeListProps } from 'react-window';
+import { useEffect, useRef, useState } from 'react';
+import { VariableSizeList } from 'react-window';
 import {
   Avatar,
   Box,
@@ -16,7 +16,11 @@ import PieActiveArc from '../../components/PieChart';
 
 
 const Home = () => {
+  const listRef = useRef<VariableSizeList>(null);
+
+  const [alturaDaLista, setAlturaDaLista] = useState(350);
   const { parcelas } = useSettings();
+
 
   const itemSize = (index: number) => {
     const parcela = parcelas[index];
@@ -24,10 +28,27 @@ const Home = () => {
     return numParcelas * 61;
   };
 
-  const ListMemoized: ForwardRefExoticComponent<VariableSizeListProps<any>> = useMemo(() => {
-    return forwardRef((props, ref) => (
-      <VariableSizeList ref={ref as LegacyRef<VariableSizeList<any>>} {...props}/>
-    ));
+
+  useEffect(() => {
+    const atualizarAlturaDaLista = () => {
+      const alturaDaTela = window.innerHeight;
+      const alturaAcimaDaLista = 250; // 58 (header) + 152 (PieActiveArc) + 40 (gap)
+      const alturaDinamicaDaLista = alturaDaTela - alturaAcimaDaLista;
+
+      setAlturaDaLista(alturaDinamicaDaLista);
+
+      if (listRef.current) {
+        listRef.current.resetAfterIndex(0);
+      };
+    };
+
+    atualizarAlturaDaLista();
+
+    window.addEventListener('resize', atualizarAlturaDaLista);
+
+    return () => {
+      window.removeEventListener('resize', atualizarAlturaDaLista);
+    };
   }, [parcelas]);
 
 
@@ -43,10 +64,11 @@ const Home = () => {
 
       <PieActiveArc />
 
-      <ListMemoized
+      <VariableSizeList
+        ref={listRef}
         itemCount={parcelas.length}
         itemSize={itemSize}
-        height={350}
+        height={alturaDaLista}
         width='100%'
       >
         {({ index, style }) => {
@@ -134,8 +156,7 @@ const Home = () => {
             </ListItem>
           );
         }}
-      </ListMemoized>
-
+      </VariableSizeList>
     </Box>
   );
 };
