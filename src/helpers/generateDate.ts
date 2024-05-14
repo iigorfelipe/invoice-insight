@@ -13,10 +13,13 @@ export const gerarDataFatura = (): string => {
 
 export const gerarDataParcela = (numeroParcela: number): string => {
   const agora = new Date();
-  const ano = agora.getFullYear();
-  const mes = agora.getMonth() + 1 + numeroParcela;
-  const mesFormatado = mes % 12 === 0 ? 12 : mes % 12;
-  const anoFormatado = ano + Math.floor(mes / 12);
+  let ano = agora.getFullYear();
+  let mes = agora.getMonth() + 1 + numeroParcela;
 
-  return `${mesFormatado.toString().padStart(2, '0')}/${anoFormatado}`;
+  if (mes > 12) {
+    ano += Math.floor((mes - 1) / 12);
+    mes = (mes - 1) % 12 + 1;
+  };
+
+  return `${mes.toString().padStart(2, '0')}/${ano}`;
 };
