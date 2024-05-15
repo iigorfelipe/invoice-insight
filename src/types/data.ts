@@ -13,21 +13,13 @@ export type Fatura = {
   parcelas: Parcela[];
 };
 
-type Endereco = {
-  estado: string;
-  cep: string;
-  cidade: string;
-  bairro: string;
-  rua: string;
-  numero: string;
-};
-
 type Contatos = {
   celuar: string;
   email: string;
 };
 
-type ParcelaInfo = {
+export type ParcelaInfo = {
+  idCliente: string;
   valorParcela: number;
   parcela: string;
   cliente: string;
@@ -35,10 +27,10 @@ type ParcelaInfo = {
 };
 
 export type Cliente = {
+  idCliente: string;
   nome: string;
   cor: string;
   contatos: Contatos;
-  endereco: Endereco;
   faturas: Fatura[];
   historicoDePagamentos: Parcela[] | [];
 };

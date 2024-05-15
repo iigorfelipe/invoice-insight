@@ -5,6 +5,7 @@ import { obterNomeDoMes } from "../helpers/getMouthName";
 import { obterValorEntreMinMax } from "../helpers/getRandomNumber";
 import { gerarNomeAleatorio } from "../helpers/generateRandomCliente";
 import { gerarDataFatura, gerarDataParcela } from "../helpers/generateDate";
+import { gerarId } from "../helpers/generateIds";
 
 const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
   const { minMaxClientes, minMaxValorDasFaturas, minMaxParcelasPorFatura } = valoresMinMax;
@@ -14,24 +15,24 @@ const gerarDadosDeClientes = (valoresMinMax: ValoresMinMax): Cliente[] => {
   const [minParcelasPorFatura, maxParcelasPorFatura] = minMaxParcelasPorFatura;
 
   const clientes: Cliente[] = [];
+  const nomesUsados: Set<string> = new Set();
 
   for (let i = 0; i < obterValorEntreMinMax(minClientes, maxClientes); i++) {
-    const nomeCliente = gerarNomeAleatorio();
+    let nomeCliente = gerarNomeAleatorio();
+
+    while (nomesUsados.has(nomeCliente)) {
+      nomeCliente = gerarNomeAleatorio();
+    }
+
+    nomesUsados.add(nomeCliente);
 
     const cliente: Cliente = {
+      idCliente:  gerarId(nomeCliente),
       nome: nomeCliente,
       cor: gerarCorAleatoria(),
       contatos: {
         celuar: gerarNumeroDeCelularAleatorio(),
         email: `${nomeCliente.toLowerCase()}@email.com`,
-      },
-      endereco: {
-        estado: 'MA',
-        cep: '0000-000',
-        cidade: 'Cidade',
-        bairro: 'Bairro',
-        rua: 'Rua',
-        numero: '0',
       },
       faturas: [],
       historicoDePagamentos: [],
@@ -89,7 +90,8 @@ const useGeraradorDeDadosDinamicos = (valoresMinMaxLocal: ValoresMinMax) => {
               valorParcela: parcela.valorParcela,
               parcela: parcela.parcela,
               cliente: cliente.nome,
-              cor: cliente.cor
+              cor: cliente.cor,
+              idCliente: cliente.idCliente
             });
 
             parcelasPorMesAno.valorTotalDasParcelas += parcela.valorParcela;
