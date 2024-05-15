@@ -13,6 +13,8 @@ import { ParcelasPorMesAno } from '../../types/data';
 import { useSettings } from '../../contexts/settings';
 import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import PieActiveArc from '../../components/PieChart';
+import { obterCorContraste } from '../../helpers/randomColor';
+import { useNavigate } from 'react-router-dom';
 
 
 const Home = () => {
@@ -26,6 +28,11 @@ const Home = () => {
     const parcela = parcelas[index];
     const numParcelas = parcela.parcelas.length;
     return numParcelas * 61;
+  };
+  
+  const navigate = useNavigate();
+  const redirectToUserDetailPage = (idCliente: string) => {
+    navigate(`/user/${idCliente}`)
   };
 
 
@@ -92,6 +99,7 @@ const Home = () => {
                         Total deste mês: {formatarValorParaMoedaBrasileira(item.valorTotalDasParcelas)}
                       </Typography>
                     }
+                    placement='bottom-start'
                   >
                     <Typography>{item.mesNome}</Typography>
                   </Tooltip>
@@ -120,13 +128,62 @@ const Home = () => {
                             width: '100%',
                           }}
                         >
-                          <Box sx={{ width: '50%', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <Box sx={{ width: '50%' }}>
 
-                            <Avatar sx={{ background: parcela.cor }}>
-                              {parcela.cliente[0]}
-                            </Avatar>
+                            <Tooltip
+                              title={
+                                <Box
+                                  sx={{
+                                    p: '10px',
+                                    color: obterCorContraste(parcela.cor),
+                                  }}
+                                >
+                                  <Typography>
+                                    Total: {formatarValorParaMoedaBrasileira(+parcela.parcela.split('/')[1] * (parcela.valorParcela))}
+                                  </Typography>
+                                </Box>
+                              }
+                              placement='left'
+                              componentsProps={{
+                                tooltip: {                                    
+                                  sx: { background: parcela.cor, borderRadius: '20px' }
+                                }
+                              }}
+                            >
+                              <Box>
+                                <Tooltip
+                                  title={<Typography>Clique para mais detalhes</Typography>}
+                                  placement='right'
+                                  componentsProps={{
+                                    tooltip: {
+                                      sx: { background: 'transparent' }
+                                    }
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '15px',                                
+                                      width: '40%',
+                                      cursor: 'pointer',
+                                      borderRadius: '20px',
+                                      '&:hover': {
+                                        background: parcela.cor,
+                                        color: obterCorContraste(parcela.cor)               
+                                      }
+                                    }}
+                                    onClick={() => redirectToUserDetailPage(parcela.idCliente)}
+                                  >
+                                    <Avatar sx={{ background: parcela.cor, color: obterCorContraste(parcela.cor) }}>
+                                      {parcela.cliente[0]}
+                                    </Avatar>
 
-                            <Typography>{parcela.cliente}</Typography>
+                                    <Typography>{parcela.cliente}</Typography>
+                                  </Box>
+                                </Tooltip>
+                              </Box>
+                            </Tooltip>
 
                           </Box>
 
