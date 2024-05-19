@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { FixedSizeList } from 'react-window';
-import { Avatar, Box, IconButton, Typography } from "@mui/material";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Avatar, Box, Button, Divider, IconButton, TextField, Typography } from "@mui/material";
+import ArrowRight from '@mui/icons-material/NavigateNext';
+import ArrowLeft from '@mui/icons-material/NavigateBefore';
+import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
+import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 import { useSettings } from "../../contexts/settings";
 import { obterCorContraste } from "../../helpers/randomColor";
 import { formatarValorParaMoedaBrasileira } from "../../helpers/formatCurrent";
+import { useAppTheme } from "../../contexts/theme";
  
 
 const UserDetails = () => {
   const { idCliente } = useParams();
   const { clientes } = useSettings();
-
-  const [clicou, setCLicou] = useState(false);
+  const { isSmDown, isMdDown } = useAppTheme();
+  const [exibirContatos, setExibirContatos] = useState(false);
 
   const cliente = clientes.find(cliente => cliente.idCliente === idCliente);
+
 
   return (
     <Box
@@ -34,19 +38,22 @@ const UserDetails = () => {
               <Box
                 sx={{
                   display: "flex",
-                  p: '6px 10px',
+                  p: '6px',
                   border: `1px solid ${cliente.cor}`,
                   borderRadius: '25px',
-                  width: clicou ? '35%' : '10%',
+                  minWidth: '150px',
                   justifyContent: 'space-between',
-                  mb: '20px'
+                  mb: '20px',
+                  gap: '20px',
+                  flexDirection: exibirContatos ? (isSmDown ? 'column' : 'flex') : 'flex'
                 }}
               >
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px'
+                    gap: exibirContatos ? '8px' : '20px',
+                    justifyContent:   'center'
                   }}
                 >
                   <Avatar sx={{ background: cliente.cor, color: obterCorContraste(cliente.cor) }}>
@@ -57,7 +64,7 @@ const UserDetails = () => {
 
                 <Box
                   sx={{
-                    display: clicou ? 'flex' : 'none',
+                    display: exibirContatos ? 'flex' : 'none',
                     alignItems: 'center',
                     gap: '20px',
                   }}
@@ -67,39 +74,218 @@ const UserDetails = () => {
                   <Typography>{cliente.contatos.email}</Typography>
                 </Box>
 
-                <IconButton onClick={() => setCLicou(!clicou)}>
-                  {clicou ? <NavigateBeforeIcon /> : <NavigateNextIcon />}
+                <IconButton onClick={() => setExibirContatos(!exibirContatos)} sx={{ borderRadius:'20px',}}>
+                  {
+                    exibirContatos
+                    ? (isSmDown ? <ArrowUp /> : <ArrowLeft />)
+                    : (isSmDown ? <ArrowDown /> : <ArrowRight />)
+                  }
                 </IconButton>
 
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', p: '20px', justifyContent: 'space-around', gap:'50px' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: isMdDown ? 'column' : 'flex',
+                p: '20px',
+                gap: '50px',
+                alignItems: 'center',
+              }}
+            >
 
-              <Box sx={{height:'400px',  width: '50%', border: '1px solid red'}}></Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  width: isMdDown ? '100%' : '50%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '20px',
+                    flexDirection: 'column',
+                    border: '1px solid gray',
+                    borderRadius: '20px',
+                    p: '20px 60px'
+                  }}
+                >
+          
+                  <Typography>14/05/2024 a 14/09/2024</Typography>
+                  <Divider sx={{width: '100%', mt: '-15px'}} />
+                  <Typography>Valor total a receber:</Typography>
+                  <Typography variant='h6'>R$ 500,00</Typography>
+                  
+                </Box>
+
+                <Divider sx={{ width: '80%', m: '20px 0px' }} />
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}
+                >
+
+                  <Typography>Filtre por períodos predefinidos</Typography>
+                  
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: '20px'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        border:'1px solid gray',
+                        borderRadius: '20px',
+                        p: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <Button
+                        variant='outlined'                        
+                        sx={{
+                          borderRadius: '50%',
+                          width: isMdDown ? '70px' : '100px',
+                          height: isMdDown ? '70px' : '100px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent:'center',
+                          background: 'transparent',
+                          '&:hover': {
+                            background: cliente.cor,
+                            color: obterCorContraste(cliente.cor),
+                            borderColor: cliente.cor
+                          }
+                        }}
+                      >
+                        <Typography variant='h4'>3</Typography>
+                      </Button>
+                      <Typography>meses</Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        border:'1px solid gray',
+                        borderRadius: '20px',
+                        p: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      <Button
+                        variant='outlined'                        
+                        sx={{
+                          borderRadius: '50%',
+                          width: isMdDown ? '70px' : '100px',
+                          height: isMdDown ? '70px' : '100px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent:'center',
+                          background: 'transparent',
+                          '&:hover': {
+                            background: cliente.cor,
+                            color: obterCorContraste(cliente.cor),
+                            borderColor: cliente.cor
+                          }
+                        }}
+                      >
+                        <Typography variant='h4'>6</Typography>
+                      </Button>
+                      <Typography>meses</Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        border:'1px solid gray',
+                        borderRadius: '20px',
+                        p: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      <Button
+                        variant='outlined'                        
+                        sx={{
+                          borderRadius: '50%',
+                          width: isMdDown ? '70px' : '100px',
+                          height: isMdDown ? '70px' : '100px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent:'center',
+                          background: 'transparent',
+                          '&:hover': {
+                            background: cliente.cor,
+                            color: obterCorContraste(cliente.cor),
+                            borderColor: cliente.cor
+                          }
+                        }}
+                      >
+                        <Typography variant='h4'>9</Typography>
+                      </Button>
+                      <Typography>meses</Typography>
+                    </Box>
+                  </Box>
+
+                  <Typography>Ou escolha um período personalizado</Typography>
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '20px'
+                    }}
+                  >
+                    <TextField type='date' size='small' />
+                    a
+                    <TextField type='date' size='small' />
+                  </Box>
+
+                </Box>
+
+              </Box>
 
               <Box
                 sx={{
                   display:'flex',
                   flexDirection: 'column',
-                  width: '50%',
+                  width: isMdDown ? '100%' : '50%',
                   alignItems: 'center',
-                  gap: '30px'
+                  gap: '30px',
                 }}
               >
 
                 <Box
                   sx={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    border: '1px solid gray',
-                    width: '40%',
+                    flexDirection: 'column',                 
                     borderRadius: '20px',
-                    p: '20px'
+                    p: '20px',
+                    mb: '-45px'
                   }}
                 >
                   
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
                     <Typography>Total:</Typography>
                     <Typography>{formatarValorParaMoedaBrasileira(cliente.faturas[0].valor_fatura)}</Typography>
                   </Box>
@@ -115,7 +301,6 @@ const UserDetails = () => {
                 >
                   {({ index, style, data }) => {
                     const item = data[index];
-                    console.log({item})
                     return (
                       <Box
                         style={style}

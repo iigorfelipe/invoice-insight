@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import usePersistedState from "../../hooks/usePersistedState";
 import { DarkTheme, LightTheme } from "../../themes";
 import { AppThemeContext, Theme } from "./context";
@@ -15,6 +15,9 @@ const AppThemeProvider = ({ children }: Props) => {
   const oppositeTheme = theme === 'light' ? 'dark' : 'light';
   const selectedTheme = theme === 'light' ? LightTheme : DarkTheme;
   
+  const { breakpoints } = selectedTheme;
+  const isSmDown = useMediaQuery(breakpoints.down('sm'));
+  const isMdDown = useMediaQuery(breakpoints.down('md'));
 
   const toggleTheme = () => setTheme(oppositeTheme);
 
@@ -34,7 +37,7 @@ const AppThemeProvider = ({ children }: Props) => {
 
 
   const providerValues: AppThemeContext = {
-    theme, oppositeTheme, toggleTheme
+    theme, oppositeTheme, toggleTheme, isSmDown, isMdDown
   };
 
   return (

@@ -15,6 +15,7 @@ import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import PieActiveArc from '../../components/PieChart';
 import { obterCorContraste } from '../../helpers/randomColor';
 import { useNavigate } from 'react-router-dom';
+import { useAppTheme } from '../../contexts/theme';
 
 
 const Home = () => {
@@ -22,6 +23,7 @@ const Home = () => {
 
   const [alturaDaLista, setAlturaDaLista] = useState(350);
   const { parcelas } = useSettings();
+  const { isMdDown } = useAppTheme();
 
 
   const itemSize = (index: number) => {
@@ -143,7 +145,7 @@ const Home = () => {
                                   </Typography>
                                 </Box>
                               }
-                              placement='left'
+                              placement={isMdDown ? 'top-start' : 'left'}
                               componentsProps={{
                                 tooltip: {                                    
                                   sx: { background: parcela.cor, borderRadius: '20px' }
@@ -152,7 +154,7 @@ const Home = () => {
                             >
                               <Box>
                                 <Tooltip
-                                  title={<Typography>Clique para mais detalhes</Typography>}
+                                  title={isMdDown ? '' : <Typography>Clique para mais detalhes</Typography>}
                                   placement='right'
                                   componentsProps={{
                                     tooltip: {
@@ -169,8 +171,8 @@ const Home = () => {
                                       cursor: 'pointer',
                                       borderRadius: '20px',
                                       '&:hover': {
-                                        background: parcela.cor,
-                                        color: obterCorContraste(parcela.cor)               
+                                        background: isMdDown ? '' : parcela.cor,
+                                        color: isMdDown ? '' : obterCorContraste(parcela.cor)               
                                       }
                                     }}
                                     onClick={() => redirectToUserDetailPage(parcela.idCliente)}
