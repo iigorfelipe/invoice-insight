@@ -16,6 +16,5 @@ export const obterCorContraste = (cor: string) => {
   const pontoMedio = 0.5;
   const corContraste = (luminancia > pontoMedio) ? '#000000' : '#FFFFFF';
 
-  // Garante que a cor de contraste tenha seis dígitos hexadecimais
   return corContraste.padStart(7, '0');
 };

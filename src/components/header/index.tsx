@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, IconButton, Popover } from '@mui/material';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
@@ -7,11 +7,14 @@ import PopoverContent from '../popoverContent';
 
 const Header = () => {
   const navigate = useNavigate();
+  const rotaAtual = useLocation();
+
+  const isHomePage = rotaAtual.pathname === '/';
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    isHomePage ? setAnchorEl(event.currentTarget) : navigate('/');
   };
 
   const handleClose = () => {
@@ -24,17 +27,14 @@ const Header = () => {
 
   return (
     <Box sx={{ display: 'flex', p: '10px' }}>
-
-      {true && (
-        <IconButton onClick={() => navigate('/')}>
-          <ArrowBackOutlinedIcon />
-        </IconButton>
-      )}
   
-      <Box sx={{ ml: 'auto' }}>
-
-        <IconButton aria-describedby={id} onClick={handleClick}>
-          <SettingsOutlinedIcon />
+      <Box>
+          
+        <IconButton
+          aria-describedby={id}
+          onClick={handleClick}
+        >
+          {isHomePage ? <SettingsOutlinedIcon /> : <ArrowBackOutlinedIcon />}
         </IconButton>
 
         <Popover

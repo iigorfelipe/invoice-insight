@@ -4,10 +4,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import { useSettings } from '../../contexts/settings';
+import { useAppTheme } from '../../contexts/theme';
 
 
 const PieChartDisplay = () => {
   const { parcelas, coresDoGrafico } = useSettings();
+  const { isSmDown } = useAppTheme();
   
   const valorTotalDoMesAtual = parcelas[0].valorTotalDasParcelas
   let valorTotalMesesRestantes = 0;
@@ -41,18 +43,21 @@ const PieChartDisplay = () => {
           sx={{
             color: data[0].color,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            flexDirection: isSmDown ? 'column' : 'row',
+            alignItems: isSmDown ? 'start' : 'center',
+            justifyContent: 'space-between',
           }}
         >
 
           <Box sx={{ display: 'flex', gap: '5px' }}>
 
-            <FiberManualRecordIcon color="inherit" />
+            {isSmDown ? null : <FiberManualRecordIcon color="inherit" />}
 
             <Typography sx={{color: '#fff'}}>
               {parcelas[0].mesNome}
             </Typography>
+
+            {isSmDown ? <FiberManualRecordIcon color="inherit" /> : null}
 
           </Box>
 
@@ -72,15 +77,25 @@ const PieChartDisplay = () => {
 
         <Divider sx={{ m: '10px 0px 10px 0px' }} />
 
-        <Box sx={{ color: data[1].color, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            color: data[1].color,
+            display: 'flex',
+            flexDirection: isSmDown ? 'column' : 'row',
+            alignItems: isSmDown ? 'start' : 'center',
+            justifyContent: 'space-between',
+          }}
+        >
 
           <Box sx={{ display: 'flex', gap: '5px' }}>
 
-            <FiberManualRecordIcon color="inherit" />
+            {isSmDown ? null : <FiberManualRecordIcon color="inherit" />}
   
             <Typography sx={{color: '#fff'}}>
               Próximas faturas
             </Typography>
+
+            {isSmDown ? <FiberManualRecordIcon color="inherit" /> : null}
 
           </Box>
 
@@ -105,7 +120,7 @@ const PieChartDisplay = () => {
               data,
               highlightScope: { faded: 'global', highlighted: 'item' },
               faded: { additionalRadius: -15, color: 'gray' },
-              innerRadius: 50,            
+              innerRadius: 35,          
             }
           ]}
           height={150}
