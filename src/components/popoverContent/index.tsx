@@ -60,7 +60,11 @@ const RangeSlider = ({ title, label, min, max }: RangeSliderProps) => {
   )
 };
 
-const PopoverContent = () => {
+type PopoverContentProps = {
+  handleClose: () => void;
+};
+
+const PopoverContent = ({ handleClose }: PopoverContentProps) => {
   const [moedaEscolhida, setMoedaEscolhida] = useState(moedas[0]);
 
   const { toggleTheme } = useAppTheme();
@@ -265,7 +269,10 @@ const PopoverContent = () => {
           height: '40px'
         }}
         variant='outlined'
-        onClick={aplicarNovosValores}
+        onClick={() => {
+          handleClose()
+          aplicarNovosValores()
+        }}
       >
           Aplicar valores
       </Button>

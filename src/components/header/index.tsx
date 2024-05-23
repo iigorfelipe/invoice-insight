@@ -51,7 +51,7 @@ const Header = () => {
             horizontal: 'right',
           }}
         >
-          <PopoverContent />
+          <PopoverContent handleClose={handleClose} />
         </Popover>
 
       </Box>
