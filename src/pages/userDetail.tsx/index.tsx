@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FixedSizeList } from 'react-window';
-import { Avatar, Box, Button, Divider, IconButton, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, IconButton, TextField, Tooltip, Typography as Text } from "@mui/material";
 import ArrowRight from '@mui/icons-material/NavigateNext';
 import ArrowLeft from '@mui/icons-material/NavigateBefore';
 import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
@@ -25,15 +25,16 @@ const UserDetails = () => {
   const [datas, setDatas] = useState({
     data1: '',
     data2: '',
-  })
+  });
+  const [desabilitarFiltragem, setDesabilitarFiltragem] = useState(true);
 
   const cliente = clientes.find((cliente) => cliente.idCliente === idCliente) as Cliente;
   const { parcelas } = cliente.faturas[0];
 
   useEffect(() => {
     setValorDoFiltro({
-      total: cliente.faturas[0].valor_fatura,
-      periodo: `${parcelas[0].data} a ${parcelas[parcelas.length -1].data}`
+      total: parcelas[0].valorParcela * parcelas.length,
+      periodo: `${parcelas[0].data} a ${parcelas.slice(-1)[0].data}`
     });
   }, [cliente.idCliente]);
 
@@ -81,6 +82,49 @@ const UserDetails = () => {
     });
   };
 
+  const obterDataInicial = () => {
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${year}-${month < 10 ? `0${month}` : month}`;
+  };
+
+
+  const obterDataFinal = () => {
+    const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
+    return `${ano}-${mes}`;
+  };
+
+
+  useEffect(() => {
+    const validateDates = () => {
+      const dataInicial = obterDataInicial();
+      const dataFinal = obterDataFinal();
+  
+      const data1Valida = datas.data1 >= dataInicial && datas.data1 <= dataFinal;
+      const data2Valida = datas.data2 >= dataInicial && datas.data2 <= dataFinal;
+  
+      const intervaloValido = datas.data1 <= datas.data2;
+  
+      if (data1Valida && data2Valida && intervaloValido) {
+        setDesabilitarFiltragem(false);
+      } else {
+        setDesabilitarFiltragem(true);
+      };
+    };
+  
+    validateDates();
+  }, [datas.data1, datas.data2, cliente]);
+  
+  const obterMensagemDesabilitacao = (periodo: number): string => {
+    const numeroDeParcelas = parcelas.length;
+    if (periodo > numeroDeParcelas) {
+      return `${cliente.nome} possui ${numeroDeParcelas} parcela(s). Não é possível filtrar por ${periodo} meses.`;
+    };
+    return '';
+  };
+  
+
   return (
     <Box
       sx={{
@@ -104,7 +148,7 @@ const UserDetails = () => {
                   minWidth: '150px',
                   justifyContent: 'space-between',
                   mb: '20px',
-                  gap: '20px',
+                  gap: isSmDown ? '10px' : '20px',
                   flexDirection: exibirContatos ? (isSmDown ? 'column' : 'flex') : 'flex'
                 }}
               >
@@ -119,20 +163,20 @@ const UserDetails = () => {
                   <Avatar sx={{ background: cliente.cor, color: obterCorContraste(cliente.cor) }}>
                     {cliente.nome[0]}
                   </Avatar>
-                  <Typography>{cliente.nome}</Typography>
+                  <Text>{cliente.nome}</Text>
                 </Box>
 
                 <Box
                   sx={{
                     display: exibirContatos ? 'flex' : 'none',
                     alignItems: 'center',
-                    gap: '20px',
+                    gap: isSmDown ? '0px' : '20px',
                     flexDirection: isSmDown ? 'column':  'flex'
                   }}
                 >
-                  <Typography>{cliente.contatos.celuar}</Typography>
+                  <Text>{cliente.contatos.celuar}</Text>
                   {!isSmDown && '|' }
-                  <Typography>{cliente.contatos.email}</Typography>
+                  <Text>{cliente.contatos.email}</Text>
                 </Box>
 
                 <IconButton onClick={() => setExibirContatos(!exibirContatos)} sx={{ borderRadius:'20px',}}>
@@ -177,11 +221,11 @@ const UserDetails = () => {
                   }}
                 >
           
-                  <Typography>{valorDoFiltro.periodo}</Typography>
+                  <Text>{valorDoFiltro.periodo}</Text>
                   <Divider sx={{width: '100%', mt: '-15px'}} />
-                  <Typography>Valor total a receber:</Typography>
-                  <Typography variant='h5'>{formatarValorParaMoedaBrasileira(valorDoFiltro.total)}</Typography>
-                  
+                  <Text>Valor total a receber:</Text>
+                  <Text variant='h5' sx={{ fontWeight: 600 }}>{formatarValorParaMoedaBrasileira(valorDoFiltro.total)}</Text>
+
                 </Box>
 
                 <Divider sx={{ width: '80%', m: '20px 0px' }} />
@@ -195,7 +239,7 @@ const UserDetails = () => {
                   }}
                 >
 
-                  <Typography>Filtre por períodos predefinidos</Typography>
+                  <Text>Filtre por períodos predefinidos</Text>
                   
                   <Box
                     sx={{
@@ -203,108 +247,61 @@ const UserDetails = () => {
                       gap: '20px'
                     }}
                   >
-                    <Box
-                      sx={{
-                        border:'1px solid gray',
-                        borderRadius: '20px',
-                        p: '10px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '5px',
-                      }}
-                    >
-                      <Button
-                        onClick={() => aplicarFiltroDePeriodoPredefinido(3)}
-                        variant='outlined'                        
-                        sx={{
-                          borderRadius: '50%',
-                          width: isMdDown ? '70px' : '100px',
-                          height: isMdDown ? '70px' : '100px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent:'center',
-                          background: 'transparent',
-                          '&:hover': {
-                            background: cliente.cor,
-                            color: obterCorContraste(cliente.cor),
-                            borderColor: cliente.cor
-                          }
-                        }}
-                      >
-                        <Typography variant='h4'>3</Typography>
-                      </Button>
-                      <Typography>meses</Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        border:'1px solid gray',
-                        borderRadius: '20px',
-                        p: '10px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '5px'
-                      }}
-                    >
-                      <Button
-                        onClick={() => aplicarFiltroDePeriodoPredefinido(6)}
-                        variant='outlined'                        
-                        sx={{
-                          borderRadius: '50%',
-                          width: isMdDown ? '70px' : '100px',
-                          height: isMdDown ? '70px' : '100px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent:'center',
-                          background: 'transparent',
-                          '&:hover': {
-                            background: cliente.cor,
-                            color: obterCorContraste(cliente.cor),
-                            borderColor: cliente.cor
-                          }
-                        }}
-                      >
-                        <Typography variant='h4'>6</Typography>
-                      </Button>
-                      <Typography>meses</Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        border:'1px solid gray',
-                        borderRadius: '20px',
-                        p: '10px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '5px'
-                      }}
-                    >
-                      <Button
-                        onClick={() => aplicarFiltroDePeriodoPredefinido(9)}
-                        variant='outlined'                        
-                        sx={{
-                          borderRadius: '50%',
-                          width: isMdDown ? '70px' : '100px',
-                          height: isMdDown ? '70px' : '100px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent:'center',
-                          background: 'transparent',
-                          '&:hover': {
-                            background: cliente.cor,
-                            color: obterCorContraste(cliente.cor),
-                            borderColor: cliente.cor
-                          }
-                        }}
-                      >
-                        <Typography variant='h4'>9</Typography>
-                      </Button>
-                      <Typography>meses</Typography>
-                    </Box>
+                   
+                    {
+                      [3, 6, 9].map((periodo) => {
+                        const desabilitado = periodo > parcelas.length
+                        const mensagemDesabilitacao = obterMensagemDesabilitacao(periodo);
+
+                        return (
+                          <Box
+                            key={periodo}
+                            sx={{
+                              border:'1px solid gray',
+                              borderRadius: '20px',
+                              p: '10px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              gap: '5px',
+                            }}
+                          >
+                            <Tooltip title={desabilitado ? <Text>{mensagemDesabilitacao}</Text> : ''}>
+                              <span>
+                                <Button
+                                  onClick={() => aplicarFiltroDePeriodoPredefinido(periodo)}
+                                  variant='outlined'
+                                  disabled={desabilitado}
+                                  sx={{
+                                    borderRadius: '50%',
+                                    width: isMdDown ? '70px' : '100px',
+                                    height: isMdDown ? '70px' : '100px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: cliente.cor,
+                                    color: obterCorContraste(cliente.cor),
+                                    '&:hover': {
+                                      background: 'transparent',
+                                    },
+                                    '&:disabled': {
+                                      background: 'transparent',
+                                    },
+                                  }}
+                                >
+                                  <Text variant='h4'>{periodo}</Text>
+                                </Button>
+                              </span>
+                            </Tooltip>
+                            <Text>meses</Text>
+                          </Box>
+                        );
+                      })
+                    }
+                   
                   </Box>
 
-                  <Typography>Ou escolha um período personalizado</Typography>
+                  <Text>Ou um período personalizado</Text>
 
                   <Box
                     sx={{
@@ -316,26 +313,47 @@ const UserDetails = () => {
                   >
                     <TextField
                       type='month'
+                      inputProps={{ min: obterDataInicial(), max: obterDataFinal() }}
                       size='small'                      
                       onChange={({ target: { value } }) => setDatas((prev) => { return {...prev, data1: value}} )}
                     /> 
-                      a
+                    
+                    <Tooltip
+                      title={desabilitarFiltragem ? (
+                        <Text>
+                          Escolha uma data entre {parcelas[0].data} e {parcelas.slice(-1)[0].data}
+                        </Text>
+                      ) : ''}
+                    >
+                      <span>
+                        <IconButton
+                          disabled={desabilitarFiltragem}
+                          onClick={aplicarFiltroDePeriodoPersonalizado}
+                          size='small'
+                          sx={{
+                            borderRadius: '9px',
+                            background: cliente.cor,
+                            color: obterCorContraste(cliente.cor),
+                            '&:disabled': {
+                              color: cliente.cor,
+                            },
+                            '&:hover': {
+                              color: cliente.cor,
+                            }                           
+                          }}
+                        >
+                          <Search />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+
                     <TextField
                       type='month'
+                      inputProps={{ min: obterDataInicial(), max: obterDataFinal() }}
                       size='small'
                       onChange={({ target: { value } }) => setDatas((prev) => { return {...prev, data2: value}} )}
                     /> 
 
-                    <IconButton
-                      sx={{
-                        width:  '40px',
-                        heigth: '40px',
-                        borderRadius: '9px',                        
-                      }}
-                      onClick={aplicarFiltroDePeriodoPersonalizado}
-                    >
-                      <Search />
-                    </IconButton>
                   </Box>
 
                 </Box>
@@ -347,7 +365,7 @@ const UserDetails = () => {
                   display:'flex',
                   flexDirection: 'column',
                   width: isMdDown ? '100%' : '50%',
-                  alignItems: 'center',
+                  alignItems: 'end',
                   gap: '30px',
                 }}
               >
@@ -357,20 +375,22 @@ const UserDetails = () => {
                     display: 'flex',
                     flexDirection: 'column',                 
                     borderRadius: '20px',
-                    p: '20px',
-                    mb: '-45px'
+                    m: '0px 15px -25px 0px',
                   }}
                 >
                   
                   <Box
                     sx={{
                       display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
+                      justifyContent: 'end',
+                      alignItems: 'end',
+                      gap: '10px',
                     }}
                   >
-                    <Typography>Total:</Typography>
-                    <Typography>{formatarValorParaMoedaBrasileira(cliente.faturas[0].valor_fatura)}</Typography>
+                    <Text>Total:</Text>
+                    <Text sx={{ fontWeight: 600 }}>
+                      {formatarValorParaMoedaBrasileira(parcelas[0].valorParcela * parcelas.length)}
+                    </Text>
                   </Box>
 
                 </Box>
@@ -410,7 +430,7 @@ const UserDetails = () => {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <Typography variant="h5">Cliente não encontrado</Typography>
+            <Text variant="h5">Cliente não encontrado</Text>
           </Box>
         )
       }
