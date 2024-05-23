@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FixedSizeList } from 'react-window';
 import { Avatar, Box, Button, Divider, IconButton, TextField, Typography } from "@mui/material";
@@ -10,16 +10,76 @@ import { useSettings } from "../../contexts/settings";
 import { obterCorContraste } from "../../helpers/randomColor";
 import { formatarValorParaMoedaBrasileira } from "../../helpers/formatCurrent";
 import { useAppTheme } from "../../contexts/theme";
- 
+import { Cliente } from "../../types/data";
+import { Search } from "@mui/icons-material";
 
 const UserDetails = () => {
   const { idCliente } = useParams();
   const { clientes } = useSettings();
   const { isSmDown, isMdDown } = useAppTheme();
   const [exibirContatos, setExibirContatos] = useState(false);
+  const [valorDoFiltro, setValorDoFiltro] = useState({
+    total: 0,
+    periodo: '',
+  });
+  const [datas, setDatas] = useState({
+    data1: '',
+    data2: '',
+  })
 
-  const cliente = clientes.find(cliente => cliente.idCliente === idCliente);
+  const cliente = clientes.find((cliente) => cliente.idCliente === idCliente) as Cliente;
+  const { parcelas } = cliente.faturas[0];
 
+  useEffect(() => {
+    setValorDoFiltro({
+      total: cliente.faturas[0].valor_fatura,
+      periodo: `${parcelas[0].data} a ${parcelas[parcelas.length -1].data}`
+    });
+  }, [cliente.idCliente]);
+
+
+  const diferencaEmMeses = (data1: string, data2: string): number => {
+
+    const parseDate = (dataStr: string): Date => {
+      const [mes, ano] = dataStr.split('/').map(Number);
+      return new Date(ano, mes - 1);
+    };
+
+    const d1 = parseDate(data1);
+    const d2 = parseDate(data2);
+
+    const diferencaEmAno = d2.getFullYear() - d1.getFullYear();
+    const diferencaEmMes = d2.getMonth() - d1.getMonth();
+
+    return diferencaEmAno * 12 + diferencaEmMes + 1;
+  };
+
+
+  const aplicarFiltroDePeriodoPersonalizado = () => {
+    const [ano1, mes1] = datas.data1.split('-');
+    const [ano2, mes2] = datas.data2.split('-');
+
+    const data1Formatada = `${mes1}/${ano1}`;
+    const data2Formatada = `${mes2}/${ano2}`;
+
+    const { valorParcela } = parcelas[0];
+
+    const periodo = diferencaEmMeses(data1Formatada, data2Formatada);
+
+    setValorDoFiltro({
+      total: valorParcela * periodo,
+      periodo: `${data1Formatada} a ${data2Formatada}`
+    });
+  };
+
+  const aplicarFiltroDePeriodoPredefinido = (periodo: number) => {
+    const { valorParcela, data } = parcelas[0];
+
+    setValorDoFiltro({
+      total: valorParcela * periodo,
+      periodo: `${data} a ${parcelas[periodo -1].data}`
+    });
+  };
 
   return (
     <Box
@@ -67,10 +127,11 @@ const UserDetails = () => {
                     display: exibirContatos ? 'flex' : 'none',
                     alignItems: 'center',
                     gap: '20px',
+                    flexDirection: isSmDown ? 'column':  'flex'
                   }}
                 >
                   <Typography>{cliente.contatos.celuar}</Typography>
-                  |
+                  {!isSmDown && '|' }
                   <Typography>{cliente.contatos.email}</Typography>
                 </Box>
 
@@ -116,10 +177,10 @@ const UserDetails = () => {
                   }}
                 >
           
-                  <Typography>14/05/2024 a 14/09/2024</Typography>
+                  <Typography>{valorDoFiltro.periodo}</Typography>
                   <Divider sx={{width: '100%', mt: '-15px'}} />
                   <Typography>Valor total a receber:</Typography>
-                  <Typography variant='h6'>R$ 500,00</Typography>
+                  <Typography variant='h5'>{formatarValorParaMoedaBrasileira(valorDoFiltro.total)}</Typography>
                   
                 </Box>
 
@@ -154,6 +215,7 @@ const UserDetails = () => {
                       }}
                     >
                       <Button
+                        onClick={() => aplicarFiltroDePeriodoPredefinido(3)}
                         variant='outlined'                        
                         sx={{
                           borderRadius: '50%',
@@ -186,6 +248,7 @@ const UserDetails = () => {
                       }}
                     >
                       <Button
+                        onClick={() => aplicarFiltroDePeriodoPredefinido(6)}
                         variant='outlined'                        
                         sx={{
                           borderRadius: '50%',
@@ -218,6 +281,7 @@ const UserDetails = () => {
                       }}
                     >
                       <Button
+                        onClick={() => aplicarFiltroDePeriodoPredefinido(9)}
                         variant='outlined'                        
                         sx={{
                           borderRadius: '50%',
@@ -246,13 +310,32 @@ const UserDetails = () => {
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '20px'
+                      justifyContent: 'center',
+                      gap: '10px',
                     }}
                   >
-                    <TextField type='date' size='small' />
-                    a
-                    <TextField type='date' size='small' />
+                    <TextField
+                      type='month'
+                      size='small'                      
+                      onChange={({ target: { value } }) => setDatas((prev) => { return {...prev, data1: value}} )}
+                    /> 
+                      a
+                    <TextField
+                      type='month'
+                      size='small'
+                      onChange={({ target: { value } }) => setDatas((prev) => { return {...prev, data2: value}} )}
+                    /> 
+
+                    <IconButton
+                      sx={{
+                        width:  '40px',
+                        heigth: '40px',
+                        borderRadius: '9px',                        
+                      }}
+                      onClick={aplicarFiltroDePeriodoPersonalizado}
+                    >
+                      <Search />
+                    </IconButton>
                   </Box>
 
                 </Box>
@@ -294,10 +377,10 @@ const UserDetails = () => {
 
                 <FixedSizeList
                   height={500}
-                  itemCount={cliente.faturas[0].parcelas.length}
+                  itemCount={parcelas.length}
                   itemSize={60}
                   width='100%'
-                  itemData={cliente.faturas[0].parcelas}
+                  itemData={parcelas}
                 >
                   {({ index, style, data }) => {
                     const item = data[index];
