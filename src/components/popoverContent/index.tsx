@@ -85,7 +85,6 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        width: '500px',
         borderRadius: '12px',
         p: '0px 25px 25px 25px'
       }}
@@ -125,12 +124,12 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
 
       <Divider sx={{ m: '0px -25px' }} />
       
-      <Box sx={{ display: 'flex', justifyContent: 'space-around', p: '25px 0px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-bewteen', p: '20px 0px', gap: '20px' }}>
 
         <MuiColorInput
           label='Mês atual'
           sx={{
-            width: '170px',
+            maxWidth: '170px',
             "& label.Mui-focused": {
               color: '#fff'
             },
@@ -156,7 +155,7 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
         <MuiColorInput
           label='Próximas faturas'
           sx={{
-            width: '170px',
+            maxWidth: '170px',
             "& label.Mui-focused": {
               color: '#fff'
             },
@@ -205,7 +204,6 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
             gridTemplateColumns: 'repeat(4, 1fr)',
             gridAutoRows: '30px',
             gap: '10px',
-
           }}
         >
           {
@@ -214,7 +212,6 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
                 key={moeda}
                 size='small'
                 variant='outlined'
-                sx={{width: '70px'}}
                 onClick={() => setMoedaEscolhida(moeda)}
               >
                 {moeda}
