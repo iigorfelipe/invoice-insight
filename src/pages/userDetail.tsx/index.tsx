@@ -12,29 +12,32 @@ import { formatarValorParaMoedaBrasileira } from "../../helpers/formatCurrent";
 import { useAppTheme } from "../../contexts/theme";
 import { Cliente } from "../../types/data";
 import { Search } from "@mui/icons-material";
+import { DadosDaFiltragem } from "../../types/filters";
 
 const UserDetails = () => {
   const { idCliente } = useParams();
   const { clientes } = useSettings();
   const { isSmDown, isMdDown } = useAppTheme();
   const [exibirContatos, setExibirContatos] = useState(false);
-  const [valorDoFiltro, setValorDoFiltro] = useState({
+  const [desabilitarFiltragem, setDesabilitarFiltragem] = useState(true);
+  const [dadosDaFiltragem, setDadosDaFiltragem] = useState<DadosDaFiltragem>({
     total: 0,
     periodo: '',
+    parcelasFiltradas: []
   });
   const [datas, setDatas] = useState({
     data1: '',
     data2: '',
   });
-  const [desabilitarFiltragem, setDesabilitarFiltragem] = useState(true);
 
   const cliente = clientes.find((cliente) => cliente.idCliente === idCliente) as Cliente;
   const { parcelas } = cliente.faturas[0];
 
   useEffect(() => {
-    setValorDoFiltro({
+    setDadosDaFiltragem({
       total: parcelas[0].valorParcela * parcelas.length,
-      periodo: `${parcelas[0].data} a ${parcelas.slice(-1)[0].data}`
+      periodo: `${parcelas[0].data} a ${parcelas.slice(-1)[0].data}`,
+      parcelasFiltradas: parcelas
     });
   }, [cliente.idCliente]);
 
@@ -67,18 +70,20 @@ const UserDetails = () => {
 
     const periodo = diferencaEmMeses(data1Formatada, data2Formatada);
 
-    setValorDoFiltro({
+    setDadosDaFiltragem({
       total: valorParcela * periodo,
-      periodo: `${data1Formatada} a ${data2Formatada}`
+      periodo: `${data1Formatada} a ${data2Formatada}`,
+      parcelasFiltradas: parcelas.slice(0, periodo)
     });
   };
 
   const aplicarFiltroDePeriodoPredefinido = (periodo: number) => {
     const { valorParcela, data } = parcelas[0];
 
-    setValorDoFiltro({
+    setDadosDaFiltragem({
       total: valorParcela * periodo,
-      periodo: `${data} a ${parcelas[periodo -1].data}`
+      periodo: `${data} a ${parcelas[periodo -1].data}`,
+      parcelasFiltradas: parcelas.slice(0, periodo)
     });
   };
 
@@ -221,10 +226,10 @@ const UserDetails = () => {
                   }}
                 >
           
-                  <Text>{valorDoFiltro.periodo}</Text>
+                  <Text>{dadosDaFiltragem.periodo}</Text>
                   <Divider sx={{width: '100%', mt: '-15px'}} />
                   <Text>Valor total a receber:</Text>
-                  <Text variant='h5' sx={{ fontWeight: 600 }}>{formatarValorParaMoedaBrasileira(valorDoFiltro.total)}</Text>
+                  <Text variant='h5' sx={{ fontWeight: 600 }}>{formatarValorParaMoedaBrasileira(dadosDaFiltragem.total)}</Text>
 
                 </Box>
 
@@ -389,7 +394,7 @@ const UserDetails = () => {
                   >
                     <Text>Total:</Text>
                     <Text sx={{ fontWeight: 600 }}>
-                      {formatarValorParaMoedaBrasileira(parcelas[0].valorParcela * parcelas.length)}
+                      {formatarValorParaMoedaBrasileira(dadosDaFiltragem.total)}
                     </Text>
                   </Box>
 
@@ -397,10 +402,10 @@ const UserDetails = () => {
 
                 <FixedSizeList
                   height={500}
-                  itemCount={parcelas.length}
+                  itemCount={dadosDaFiltragem.parcelasFiltradas.length}
                   itemSize={60}
                   width='100%'
-                  itemData={parcelas}
+                  itemData={dadosDaFiltragem.parcelasFiltradas}
                 >
                   {({ index, style, data }) => {
                     const item = data[index];
