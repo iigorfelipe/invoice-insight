@@ -9,6 +9,26 @@ export const opcoesDeClientes = [
   'Franky',
   'Brook',
   'Jinbe',
+  'Ace',
+  'Roger',
+  'Teach',
+  'Shanks',
+  'Buggy',
+  'Sogeking',
+  'Katakuri',
+  'Linlin',
+  'Oda',
+  'Enel',
+  'Garp',
+  'Kaya',
+  'Hiyori',
+  'Kuro',
+  'Kureha',
+  'Morgans',
+  'Perona',
+  'Noland',
+  'Sora',
+  'Kaido'
 ];
 
 export const gerarNomeAleatorio = () => {
