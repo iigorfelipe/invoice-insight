@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import { Cliente, ValoresMinMax, ParcelasPorMesAno } from "../../types/data";
 import { coresIniciaisDoGrafico, quantidadesIniciais } from "../../mocks/data";
+import { DadosDaFiltragemGeral } from "../../types/filters";
 
 export type CoresDoGrafico = {
   corMesAtual: string;
@@ -26,6 +27,21 @@ export type DefaultSettingsContext = {
 
   setCoresDoGrafico: React.Dispatch<React.SetStateAction<CoresDoGrafico>>;
 
+  dadosDaFiltragemGeral: DadosDaFiltragemGeral;
+  setDadosDaFiltragemGeral: React.Dispatch<React.SetStateAction<DadosDaFiltragemGeral>>;
+
+  redefinirFiltro: () => void;
+
+  corGradiente: string;
+
+  filtroAtivo: number;
+  setFiltroAtivo: React.Dispatch<React.SetStateAction<number>>;
+
+  datas: { data1: string, data2: string };
+  setDatas: React.Dispatch<React.SetStateAction<{
+    data1: string;
+    data2: string;
+  }>>
 };
 
 export const defaultSettingsContext: DefaultSettingsContext = {
@@ -43,8 +59,21 @@ export const defaultSettingsContext: DefaultSettingsContext = {
 
   aplicarNovosValores: () => {},
 
+  redefinirFiltro: () => {},
+
   coresDoGrafico: coresIniciaisDoGrafico,
-  setCoresDoGrafico: () => {}
+  setCoresDoGrafico: () => {},
+
+  dadosDaFiltragemGeral: {} as DadosDaFiltragemGeral,
+  setDadosDaFiltragemGeral: () => {},
+
+  corGradiente: '',
+
+  filtroAtivo: 0,
+  setFiltroAtivo: () => 0,
+
+  datas: { data1: '', data2: '' },
+  setDatas: () => {},
 };
 
 export const SettingsContext = createContext<DefaultSettingsContext>(defaultSettingsContext);

@@ -4,6 +4,8 @@ import {
   Avatar,
   Box,
   Divider,
+  IconButton,
+  Link,
   List,
   ListItem,
   Tooltip,
@@ -16,14 +18,22 @@ import PieActiveArc from '../../components/PieChart';
 import { obterCorContraste } from '../../helpers/randomColor';
 import { useNavigate } from 'react-router-dom';
 import { useAppTheme } from '../../contexts/theme';
+import Reset from '@mui/icons-material/RotateLeftOutlined';
+import Apply from '@mui/icons-material/AutoAwesomeOutlined';
 
 
 const Home = () => {
   const listRef = useRef<VariableSizeList>(null);
 
   const [alturaDaLista, setAlturaDaLista] = useState(350);
-  const { parcelas } = useSettings();
-  const { isMdDown } = useAppTheme();
+  const {
+    redefinirFiltro,
+    corGradiente,
+    dadosDaFiltragemGeral: { parcelasFiltradas: parcelas },
+    aplicarNovosValores,
+    filtroAtivo
+  } = useSettings();
+  const { isSmDown, isMdDown } = useAppTheme();
 
 
   const itemSize = (index: number) => {
@@ -60,18 +70,80 @@ const Home = () => {
     };
   }, [parcelas]);
 
+  const naoPossuiValor = parcelas[0].valorTotalDasParcelas === 0;
 
   return (
     <Box
       sx={{
-        p: '0px 10%',
-        display: "flex",
+        p: `0px ${isSmDown ? '1%' : '10%'}`,
+        display: 'flex',
         flexDirection: 'column',
         gap: '40px',
       }}
     >
 
-      <PieActiveArc />
+      { naoPossuiValor ? null : <PieActiveArc /> }
+
+      <Box
+        sx={{
+          // border: '1px solid red',
+          display: 'flex',
+          justifyContent: 'center',
+          gap:'20px'
+        }}
+      >
+        <Tooltip title={<Typography>Gerar dados aleatoriós</Typography>}>
+          <span>
+            <IconButton
+              disabled={false}
+              onClick={aplicarNovosValores}
+              size='small'
+              sx={{
+                borderRadius: naoPossuiValor ? '12px' : '8px',
+                background: corGradiente,
+                height: naoPossuiValor ? '100%' : '40px',
+                width: naoPossuiValor ? '100%' : '40px',
+                p: '10px',
+                m: '0px',
+                gap: '5px',
+                display: 'flex',
+                flexDirection: naoPossuiValor ? 'column' : 'row',
+                color: obterCorContraste(corGradiente)
+              }}
+            >
+              {naoPossuiValor ? 'Gerar dados aleatórios' : null}<Apply />
+            </IconButton>
+          </span>
+        </Tooltip>
+
+        {
+          filtroAtivo === 0 ? null : (
+            <Tooltip title={<Typography>Limpar todos os filtros</Typography>}>
+              <span>
+                <IconButton
+                  disabled={false}
+                  onClick={redefinirFiltro}
+                  size='small'
+                  sx={{
+                    borderRadius: '8px',
+                    background: corGradiente,
+                    height: '40px',
+                    width: '40px',
+                    p: '0px',
+                    m: '0px',
+                    color: obterCorContraste(corGradiente),
+                    '&:hover': {
+                      background: corGradiente,
+                    },                   
+                  }}
+                >
+                  <Reset />
+                </IconButton>
+              </span>
+            </Tooltip>
+          )
+        }
+      </Box>
 
       <VariableSizeList
         ref={listRef}
@@ -154,7 +226,7 @@ const Home = () => {
                             >
                               <Box>
                                 <Tooltip
-                                  title={isMdDown ? '' : <Typography>Clique para mais detalhes</Typography>}
+                                  title={isMdDown ? '' : <Typography sx={{background: 'inherit'}}>Clique para mais detalhes</Typography>}
                                   placement='right'
                                   componentsProps={{
                                     tooltip: {
@@ -202,7 +274,7 @@ const Home = () => {
 
                         {
                           item.parcelas.length !== index + 1 && (
-                            <Divider sx={{ width: '100%', m: '10px 0px 10px 0px' }} />
+                            <Divider sx={{ width: '100%', m: '10px 0px' }} />
                           )
                         }
 
@@ -216,6 +288,11 @@ const Home = () => {
           );
         }}
       </VariableSizeList>
+
+      <Link variant='h6' href='https://github.com/iigorfelipe/invoice-insight' target='_blank' sx={{ display: 'flex', justifyContent: 'center' }}>
+        Github do projeto
+      </Link>
+
     </Box>
   );
 };

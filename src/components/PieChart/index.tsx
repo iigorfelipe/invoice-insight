@@ -1,16 +1,19 @@
-import { Box, Divider, IconButton, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import { useSettings } from '../../contexts/settings';
 import { useAppTheme } from '../../contexts/theme';
-
+import Filters from '../filterContent';
 
 const PieChartDisplay = () => {
-  const { parcelas, coresDoGrafico } = useSettings();
-  const { isSmDown } = useAppTheme();
-  
+  const {
+    dadosDaFiltragemGeral: { parcelasFiltradas: parcelas },
+    coresDoGrafico,
+  } = useSettings();
+
+  const { isSmDown, isMdDown } = useAppTheme();
+
   const valorTotalDoMesAtual = parcelas[0].valorTotalDasParcelas
   let valorTotalMesesRestantes = 0;
 
@@ -27,107 +30,101 @@ const PieChartDisplay = () => {
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: isMdDown ? 'column' : 'flex',
+        alignItems: "center",
+        justifyContent: 'space-around',
       }}
     >
+      
+      <Box sx={{ display: 'flex' }}>
+  
+        <PieChart
+          series={[{
+            data,
+            highlightScope: { faded: 'global', highlighted: 'item' },
+            faded: { additionalRadius: -15, color: 'gray' },
+            innerRadius: 25,     
+          }]}
+          height={150}
+          width={220}
+          margin={{ left: isSmDown ? 50 : 0, top: 0, right: isSmDown ? 50 : 0 }}
+        />
 
-      <Box
-        sx={{
-          width: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center'
-        }}
-      >
         <Box
           sx={{
-            color: data[0].color,
+            width: isSmDown ? '100%' : '80%',
             display: 'flex',
-            flexDirection: isSmDown ? 'column' : 'row',
-            alignItems: isSmDown ? 'start' : 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
+            justifyContent: 'center',
           }}
         >
+          <Box
+            sx={{            
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
 
-          <Box sx={{ display: 'flex', gap: '5px' }}>
+            <FiberManualRecordIcon sx={{ color: data[0].color, }} />
 
-            {isSmDown ? null : <FiberManualRecordIcon color="inherit" />}
-
-            <Typography sx={{color: '#fff'}}>
+            <Typography sx={{ m: '0px auto 0px 5px'}}>
               {parcelas[0].mesNome}
             </Typography>
+          
 
-            {isSmDown ? <FiberManualRecordIcon color="inherit" /> : null}
-
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-
-            <Typography sx={{color: '#fff'}}>
+            <Typography>
               {formatarValorParaMoedaBrasileira(data[0].value)}
             </Typography>
 
-            <IconButton sx={{p: '5px'}}>
-              <ChevronRightIcon/>
-            </IconButton>
-
           </Box>
 
-        </Box>
+          <Divider sx={{ m: '10px 0px 10px 0px' }} />
 
-        <Divider sx={{ m: '10px 0px 10px 0px' }} />
+          <Box
+            sx={{            
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
 
-        <Box
-          sx={{
-            color: data[1].color,
-            display: 'flex',
-            flexDirection: isSmDown ? 'column' : 'row',
-            alignItems: isSmDown ? 'start' : 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+            <FiberManualRecordIcon sx={{color: data[1].color }} />
 
-          <Box sx={{ display: 'flex', gap: '5px' }}>
-
-            {isSmDown ? null : <FiberManualRecordIcon color="inherit" />}
-  
-            <Typography sx={{color: '#fff'}}>
+            <Typography sx={{ m: '0px auto 0px 5px' }}>
               Próximas faturas
             </Typography>
 
-            {isSmDown ? <FiberManualRecordIcon color="inherit" /> : null}
-
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-  
-            <Typography sx={{color: '#fff'}}>
+            <Typography>
               {formatarValorParaMoedaBrasileira(data[1].value)}
             </Typography>
+    
+          </Box>
 
-            <IconButton sx={{p: '5px'}}>
-              <ChevronRightIcon/>
-            </IconButton>
+          <Divider sx={{ m: '10px 0px 10px 0px' }} />
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+
+            <Typography sx={{ fontWeight: 600, m: '0px auto 0px 5px' }}>
+              Total
+            </Typography>
+
+            <Typography sx={{ fontWeight: 600 }}>
+              {formatarValorParaMoedaBrasileira(data[0].value + data[1].value)}
+            </Typography>
 
           </Box>
         </Box>
+
       </Box>
 
-      <Box>
-        <PieChart
-          series={[
-            {
-              data,
-              highlightScope: { faded: 'global', highlighted: 'item' },
-              faded: { additionalRadius: -15, color: 'gray' },
-              innerRadius: 35,          
-            }
-          ]}
-          height={150}
-          width={250}
-          sx={{ ml: '200px'}}
-        />
-      </Box>
+      <Divider sx={{width: '100%', m: '35px 0px', display: isMdDown ? 'flex' : 'none'}}/>
+
+      {parcelas[0].valorTotalDasParcelas > 0 && <Filters />}
+
     </Box>
   );
 };

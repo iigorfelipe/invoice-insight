@@ -3,12 +3,14 @@ import { Button, Divider, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
+import Apply from '@mui/icons-material/AutoAwesomeOutlined';
 import { MuiColorInput } from 'mui-color-input';
 import { useAppTheme } from '../../contexts/theme';
 import { useSettings } from '../../contexts/settings';
 import { moedas } from '../../mocks/moedas';
 import { quantidadesIniciais } from '../../mocks/data';
 import { ValoresMinMax } from '../../types/data';
+import { obterCorContraste } from '../../helpers/randomColor';
 
 type RangeSliderProps = {
   title: string;
@@ -72,6 +74,7 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
   const {
     coresDoGrafico,
     setCoresDoGrafico,
+    corGradiente,
     valoresMinMax: {
       minMaxClientes,
       minMaxParcelasPorFatura,
@@ -263,15 +266,22 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
       <Button
         sx={{
           borderRadius: '8px',
-          height: '40px'
+          height: '40px',
+          background: corGradiente,
+          color: obterCorContraste(corGradiente),
+          '&:hover': {
+            background: corGradiente,
+            color: obterCorContraste(corGradiente)
+          }
         }}
         variant='outlined'
         onClick={() => {
           handleClose()
           aplicarNovosValores()
         }}
+        endIcon={<Apply />}
       >
-          Aplicar valores
+        Aplicar valores
       </Button>
 
     </Box>
