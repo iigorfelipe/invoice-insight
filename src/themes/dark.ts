@@ -4,11 +4,11 @@ const DarkTheme = createTheme({
 
   breakpoints: {
     values: {
-      xs: 0,
+      xs: 360,
       sm: 680,
-      md: 980,
-      lg: 1200,
-      xl: 1536,
+      md: 1100,
+      lg: 1600,
+      xl: 1900,
     }
   },
 
