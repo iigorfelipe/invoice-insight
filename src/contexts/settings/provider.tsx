@@ -3,7 +3,7 @@ import { SettingsContext } from "./context";
 import { coresIniciaisDoGrafico, quantidadesIniciais, valorInicialParcelasPorMesAno } from "../../mocks/data";
 import useDynamicDataGenerator from "../../hooks/useDynamicDataGenerator";
 import { Cliente, ParcelasPorMesAno } from "../../types/data";
-import { DadosDaFiltragemGeral } from "../../types/filters";
+import { DadosDaFiltragemGeral, DadosDaFiltragemPorCliente } from "../../types/filters";
 import { valorTotalDasParcelas } from "../../helpers/reducer";
 
 type Props = {
@@ -23,6 +23,8 @@ const SettingsProvider = ({ children }: Props) => {
     data2: '',
   });
 
+  const [dadosDoCliente, setDadosDoCliente] = useState<Cliente | undefined>(undefined);
+
   const corGradiente = `linear-gradient(to right bottom, ${coresDoGrafico.corMesAtual}, ${coresDoGrafico.corProximasFaturas})`;
   
   const [dadosDaFiltragemGeral, setDadosDaFiltragemGeral] = useState<DadosDaFiltragemGeral>({
@@ -36,20 +38,53 @@ const SettingsProvider = ({ children }: Props) => {
     }],
   });
 
+  const [dadosDaFiltragemPorCliente, setDadosDaFiltragemPorCliente] = useState<DadosDaFiltragemPorCliente>({
+    total: 0,
+    periodo: '',
+    parcelasFiltradas: []
+  });
+
+  const [filtroAtivo2, setFiltroAtivo2] = useState(0);
+  const [datas2, setDatas2] = useState({
+    data1: '',
+    data2: '',
+  });
+
+
   const redefinirFiltro = () => {
-    const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
+    if (dadosDoCliente) {
 
-    setDadosDaFiltragemGeral({
-      parcelasFiltradas: parcelas.map((item) => item),
-      periodo: `${ano}-${mes}`,
-      total: valorTotalDasParcelas(parcelas)
-    });
+      const { parcelas: parcelasDoCliente } = dadosDoCliente?.faturas[0]
 
-    setFiltroAtivo(0);
-    setDatas({
-      data1: '',
-      data2: ''
-    })
+      const [mes, ano] = parcelasDoCliente.slice(-1)[0].data.split('/');
+
+      setDadosDaFiltragemPorCliente({
+        parcelasFiltradas: parcelasDoCliente.map((item) => item),
+        periodo: `${ano}-${mes}`,
+        total: parcelasDoCliente[0].valorParcela * parcelasDoCliente.length
+      });
+  
+      setFiltroAtivo2(0);
+      setDatas2({
+        data1: '',
+        data2: ''
+      });
+
+    } else {
+      const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
+
+      setDadosDaFiltragemGeral({
+        parcelasFiltradas: parcelas.map((item) => item),
+        periodo: `${ano}-${mes}`,
+        total: valorTotalDasParcelas(parcelas)
+      });
+  
+      setFiltroAtivo(0);
+      setDatas({
+        data1: '',
+        data2: ''
+      });
+    };
   };
 
   const aplicarNovosValores = () => {
@@ -80,7 +115,12 @@ const SettingsProvider = ({ children }: Props) => {
     dadosDaFiltragemGeral, setDadosDaFiltragemGeral,
     corGradiente,
     filtroAtivo, setFiltroAtivo,
-    datas, setDatas
+    datas, setDatas,
+    dadosDoCliente, setDadosDoCliente,
+
+    dadosDaFiltragemPorCliente, setDadosDaFiltragemPorCliente,
+    filtroAtivo2, setFiltroAtivo2,
+    datas2, setDatas2,
   };
 
   return (

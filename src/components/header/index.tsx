@@ -4,17 +4,25 @@ import { Box, IconButton, Popover } from '@mui/material';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import PopoverContent from '../popoverContent';
+import { useSettings } from '../../contexts/settings';
 
 const Header = () => {
   const navigate = useNavigate();
   const rotaAtual = useLocation();
+  const { setDadosDoCliente, redefinirFiltro } = useSettings();
 
   const isHomePage = rotaAtual.pathname === '/';
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    isHomePage ? setAnchorEl(event.currentTarget) : navigate('/');
+    if (isHomePage) {
+      setAnchorEl(event.currentTarget);
+    } else {
+      setDadosDoCliente(undefined);
+      redefinirFiltro();
+      navigate('/');
+    };
   };
 
   const handleClose = () => {
