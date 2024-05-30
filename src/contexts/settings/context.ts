@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { Cliente, ValoresMinMax, ParcelasPorMesAno } from "../../types/data";
-import { coresIniciaisDoGrafico, quantidadesIniciais } from "../../mocks/data";
-import { DadosDaFiltragemGeral, DadosDaFiltragemPorCliente, DatasType } from "../../types/filters";
+import { coresIniciaisDoGrafico, dadosIniciaisDaFiltragem, dadosIniciaisDaFiltragemCliente, datasIniciais, quantidadesIniciais } from "../../mocks/data";
+import { DadosDaFiltragemGeral, DadosDaFiltragemCliente, DatasType } from "../../types/filters";
 
 export type CoresDoGrafico = {
   corMesAtual: string;
@@ -43,14 +43,14 @@ export type DefaultSettingsContext = {
   dadosDoCliente: Cliente | undefined;
   setDadosDoCliente: React.Dispatch<React.SetStateAction<Cliente | undefined>>;
 
-  dadosDaFiltragemPorCliente: DadosDaFiltragemPorCliente;
-  setDadosDaFiltragemPorCliente: React.Dispatch<React.SetStateAction<DadosDaFiltragemPorCliente>>
+  dadosDaFiltragemCliente: DadosDaFiltragemCliente;
+  setDadosDaFiltragemCliente: React.Dispatch<React.SetStateAction<DadosDaFiltragemCliente>>
 
-  filtroAtivo2: number;
-  setFiltroAtivo2: React.Dispatch<React.SetStateAction<number>>;
+  filtroAtivoCliente: number;
+  setFiltroAtivoCliente: React.Dispatch<React.SetStateAction<number>>;
 
-  datas2: DatasType;
-  setDatas2: React.Dispatch<React.SetStateAction<DatasType>>;
+  datasCliente: DatasType;
+  setDatasCliente: React.Dispatch<React.SetStateAction<DatasType>>;
 };
 
 export const defaultSettingsContext: DefaultSettingsContext = {
@@ -73,7 +73,7 @@ export const defaultSettingsContext: DefaultSettingsContext = {
   coresDoGrafico: coresIniciaisDoGrafico,
   setCoresDoGrafico: () => {},
 
-  dadosDaFiltragemGeral: {} as DadosDaFiltragemGeral,
+  dadosDaFiltragemGeral: dadosIniciaisDaFiltragem,
   setDadosDaFiltragemGeral: () => {},
 
   corGradiente: '',
@@ -81,20 +81,20 @@ export const defaultSettingsContext: DefaultSettingsContext = {
   filtroAtivo: 0,
   setFiltroAtivo: () => 0,
 
-  datas: { data1: '', data2: '' },
+  datas: datasIniciais,
   setDatas: () => {},
 
   dadosDoCliente: undefined,
   setDadosDoCliente: () => {},
 
-  dadosDaFiltragemPorCliente: {} as DadosDaFiltragemPorCliente,
-  setDadosDaFiltragemPorCliente: () => {},
+  dadosDaFiltragemCliente: dadosIniciaisDaFiltragemCliente,
+  setDadosDaFiltragemCliente: () => {},
 
-  filtroAtivo2: 0,
-  setFiltroAtivo2: () => 0,
+  filtroAtivoCliente: 0,
+  setFiltroAtivoCliente: () => 0,
 
-  datas2: { data1: '', data2: '' },
-  setDatas2: () => {},
+  datasCliente: datasIniciais,
+  setDatasCliente: () => {},
 };
 
 export const SettingsContext = createContext<DefaultSettingsContext>(defaultSettingsContext);

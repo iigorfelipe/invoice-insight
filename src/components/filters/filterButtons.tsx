@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import {
-  Box,
-  IconButton,
-  Tooltip,
-  Typography as Text,
-} from '@mui/material';
+import { Box, IconButton, Tooltip, Typography as Text } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import Reset from '@mui/icons-material/RotateLeftOutlined';
 import { useSettings } from '../../contexts/settings';
 import { obterCorContraste } from '../../helpers/randomColor';
 import { valorTotalDasParcelas } from '../../helpers/reducer';
+import { obterDataFinal, obterDataInicial } from '../../helpers/getDatePeriod';
+import { DatasType } from '../../types/filters';
+import { Parcela, ParcelasPorMesAno } from '../../types/data';
 
 const FilterButtons = () => {
   const {
@@ -21,149 +19,99 @@ const FilterButtons = () => {
     datas,
     dadosDoCliente,
     redefinirFiltro,
-
-    setDadosDaFiltragemPorCliente,
-    filtroAtivo2,
-    setFiltroAtivo2,
-    datas2,
+    setDadosDaFiltragemCliente,
+    filtroAtivoCliente,
+    setFiltroAtivoCliente,
+    datasCliente,
   } = useSettings();
 
-  const filtroAtivo = dadosDoCliente ? filtroAtivo2 : filtroAtivoGeral;
+  const [desabilitarFiltragemDe, setDesabilitarFiltragemDe] = useState({
+    geral: true,
+    cliente: true,
+  });
 
+  const filtroAtivo = dadosDoCliente ? filtroAtivoCliente : filtroAtivoGeral;
+  const backgroundColor = dadosDoCliente ? dadosDoCliente.cor : corGradiente;
   const parcelasDoCliente = dadosDoCliente?.faturas[0].parcelas;
 
-  const backgroundColor = dadosDoCliente ? dadosDoCliente.cor : corGradiente;
 
-  const [desabilitarFiltragem1, setDesabilitarFiltragem] = useState(true);
-  const [desabilitarFiltragem2, setDesabilitarFiltragem2] = useState(true);
+  useEffect(() => {
+    const validateDates = () => {
+      const dataInicial = obterDataInicial();
+      const dataFinal = obterDataFinal(parcelas);
+  
+      const validate = ({ data1, data2 }: DatasType) => {
+        const data1Valida = data1 >= dataInicial && data1 <= dataFinal;
+        const data2Valida = data2 >= dataInicial && data2 <= dataFinal;
+        const intervaloValido = data1 <= data2;
+  
+        return data1Valida && data2Valida && intervaloValido;
+      };
+  
+      setDesabilitarFiltragemDe({
+        geral: !validate(datas),
+        cliente: !validate(datasCliente),
+      });
+    };
+  
+    validateDates();
+  }, [datas.data1, datas.data2, datasCliente.data1, datasCliente.data2]);
+
 
   const desabilitarFiltragem = dadosDoCliente
-    ? desabilitarFiltragem2
-    : desabilitarFiltragem1;
+    ? desabilitarFiltragemDe.cliente
+    : desabilitarFiltragemDe.geral;
+
+  const useFilters = () => {
+    const datasAtuais = dadosDoCliente ? datasCliente : datas;
+    const parcelasAtuais = dadosDoCliente ? (parcelasDoCliente || []) : parcelas;
+
+    const [ano1, mes1] = datasAtuais.data1.split('-');
+    const [ano2, mes2] = datasAtuais.data2.split('-');
+
+    const data1 = `${mes1}/${ano1}`;
+    const data2 = `${mes2}/${ano2}`;
+
+    const parcelasFiltradas = parcelasAtuais.filter((parcela) => {
+      const [mes, ano] = parcela.data.split('/').map(Number);
+      const dataParcela = new Date(ano, mes - 1);
+      const dataInicio = new Date(+ano1, +mes1 - 1);
+      const dataFim = new Date(+ano2, +mes2 - 1);
+      return dataParcela >= dataInicio && dataParcela <= dataFim;
+    });
+
+    return { data1, data2, parcelasFiltradas }
+  };
 
   const aplicarFiltroDePeriodoPersonalizado = () => {
-    if (dadosDoCliente) {
-      setFiltroAtivo2(1);
-      const [ano1, mes1] = datas2.data1.split('-');
-      const [ano2, mes2] = datas2.data2.split('-');
 
-      const data1Formatada = `${mes1}/${ano1}`;
-      const data2Formatada = `${mes2}/${ano2}`;
+    const { data1, data2, parcelasFiltradas } = useFilters();
+
+    if (dadosDoCliente) {
+      setFiltroAtivoCliente(1);
 
       const { parcelas: parcelasDoCliente } = dadosDoCliente?.faturas[0];
       const { valorParcela } = parcelasDoCliente[0];
 
-      const diferencaEmMeses = (data11: string, data22: string): number => {
-        const parseDate = (dataStr: string): Date => {
-          const [mes, ano] = dataStr.split('/').map(Number);
-          return new Date(ano, mes - 1);
-        };
+      const periodo = diferencaEmMeses(data1, data2);
 
-        const d1 = parseDate(data11);
-        const d2 = parseDate(data22);
-
-        const diferencaEmAno = d2.getFullYear() - d1.getFullYear();
-        const diferencaEmMes = d2.getMonth() - d1.getMonth();
-
-        return diferencaEmAno * 12 + diferencaEmMes + 1;
-      };
-
-      const periodo = diferencaEmMeses(data1Formatada, data2Formatada);
-
-      const parcelasFiltradas = parcelasDoCliente.filter((parcela) => {
-        const [mes, ano] = parcela.data.split('/').map(Number);
-        const dataParcela = new Date(ano, mes - 1);
-        const dataInicio = new Date(+ano1, +mes1 - 1);
-        const dataFim = new Date(+ano2, +mes2 - 1);
-        return dataParcela >= dataInicio && dataParcela <= dataFim;
-      });
-
-      setDadosDaFiltragemPorCliente({
+      setDadosDaFiltragemCliente({
         total: valorParcela * periodo,
-        periodo: `${data1Formatada} a ${data2Formatada}`,
-        parcelasFiltradas: parcelasFiltradas,
+        periodo: `${data1} a ${data2}`,
+        parcelasFiltradas: parcelasFiltradas as  Parcela[],
       });
     } else {
       setFiltroAtivo(1);
-      const [ano1, mes1] = datas.data1.split('-');
-      const [ano2, mes2] = datas.data2.split('-');
 
-      const data1Formatada = `${mes1}/${ano1}`;
-      const data2Formatada = `${mes2}/${ano2}`;
-
-      const parcelasFiltradas = parcelas.filter((parcela) => {
-        const [mes, ano] = parcela.data.split('/').map(Number);
-        const dataParcela = new Date(ano, mes - 1);
-        const dataInicio = new Date(+ano1, +mes1 - 1);
-        const dataFim = new Date(+ano2, +mes2 - 1);
-        return dataParcela >= dataInicio && dataParcela <= dataFim;
-      });
-
-      const valorTotalFiltrado = valorTotalDasParcelas(parcelasFiltradas);
+      const valorTotalFiltrado = valorTotalDasParcelas(parcelasFiltradas as ParcelasPorMesAno[]);
 
       setDadosDaFiltragemGeral({
         total: valorTotalFiltrado,
-        periodo: `${data1Formatada} a ${data2Formatada}`,
-        parcelasFiltradas: parcelasFiltradas,
+        periodo: `${data1} a ${data2}`,
+        parcelasFiltradas: parcelasFiltradas as ParcelasPorMesAno[],
       });
-    }
-  };
-
-  const obterDataInicial = () => {
-    const date = new Date();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return `${year}-${month < 10 ? `0${month}` : month}`;
-  };
-
-  const obterDataFinal = () => {
-    const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
-    return `${ano}-${mes}`;
-  };
-
-  useEffect(() => {
-    const validateDates = () => {
-      const dataInicial = obterDataInicial();
-      const dataFinal = obterDataFinal();
-
-      const data1Valida =
-        datas.data1 >= dataInicial && datas.data1 <= dataFinal;
-      const data2Valida =
-        datas.data2 >= dataInicial && datas.data2 <= dataFinal;
-
-      const intervaloValido = datas.data1 <= datas.data2;
-
-      if (data1Valida && data2Valida && intervaloValido) {
-        setDesabilitarFiltragem(false);
-      } else {
-        setDesabilitarFiltragem(true);
-      }
     };
-
-    validateDates();
-  }, [datas.data1, datas.data2]);
-
-  useEffect(() => {
-    const validateDates = () => {
-      const dataInicial = obterDataInicial();
-      const dataFinal = obterDataFinal();
-
-      const data1Valida =
-        datas2.data1 >= dataInicial && datas2.data1 <= dataFinal;
-      const data2Valida =
-        datas2.data2 >= dataInicial && datas2.data2 <= dataFinal;
-
-      const intervaloValido = datas2.data1 <= datas2.data2;
-
-      if (data1Valida && data2Valida && intervaloValido) {
-        setDesabilitarFiltragem2(false);
-      } else {
-        setDesabilitarFiltragem2(true);
-      }
-    };
-
-    validateDates();
-  }, [datas2.data1, datas2.data2]);
+  };
 
   return (
     <Box sx={{ display: 'flex', gap: '10px' }}>
@@ -192,8 +140,7 @@ const FilterButtons = () => {
             size="small"
             sx={{
               borderRadius: '9px',
-              background:
-                filtroAtivo === 1 ? backgroundColor : 'normal',
+              background: filtroAtivo === 1 ? backgroundColor : 'normal',
               height: '38px',
               width: '38px',
               p: '0px',
@@ -217,7 +164,7 @@ const FilterButtons = () => {
         </span>
       </Tooltip>
 
-      {dadosDoCliente && filtroAtivo !== 0 ? (
+      {filtroAtivo !== 0 ? (
         <Tooltip title={<Text>Limpar todos os filtros</Text>}>
           <span>
             <IconButton
@@ -234,8 +181,7 @@ const FilterButtons = () => {
                   filtroAtivo !== 0
                     ? obterCorContraste(backgroundColor)
                     : 'normal',
-                background:
-                  filtroAtivo !== 0 ? backgroundColor : 'normal',
+                background: filtroAtivo !== 0 ? backgroundColor : 'normal',
                 border:
                   desabilitarFiltragem || filtroAtivo !== 0
                     ? 'none'
@@ -249,8 +195,7 @@ const FilterButtons = () => {
                     filtroAtivo !== 0
                       ? obterCorContraste(backgroundColor)
                       : 'normal',
-                  background:
-                    filtroAtivo !== 0 ? backgroundColor : 'normal',
+                  background: filtroAtivo !== 0 ? backgroundColor : 'normal',
                 },
               }}
             >

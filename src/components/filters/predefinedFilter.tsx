@@ -14,12 +14,12 @@ const PredefinedFilters = () => {
     setFiltroAtivo,
     dadosDoCliente,
 
-    setDadosDaFiltragemPorCliente,
-    filtroAtivo2,
-    setFiltroAtivo2,
+    setDadosDaFiltragemCliente,
+    filtroAtivoCliente,
+    setFiltroAtivoCliente,
   } = useSettings();
 
-  const filtroAtivo = dadosDoCliente ? filtroAtivo2 : filtroAtivoGeral
+  const filtroAtivo = dadosDoCliente ? filtroAtivoCliente : filtroAtivoGeral
 
   const parcelasDoCliente = dadosDoCliente?.faturas[0].parcelas;
 
@@ -27,11 +27,11 @@ const PredefinedFilters = () => {
 
   const aplicarFiltroDePeriodoPredefinido = (periodo: number) => {
     if (dadosDoCliente) {
-      setFiltroAtivo2(periodo);
+      setFiltroAtivoCliente(periodo);
       const { parcelas: parcelasDoCliente } = dadosDoCliente?.faturas[0];
       const { valorParcela, data } = parcelasDoCliente[0];
 
-      setDadosDaFiltragemPorCliente({
+      setDadosDaFiltragemCliente({
         total: valorParcela * periodo,
         periodo: `${data} a ${parcelasDoCliente[periodo -1].data}`,
         parcelasFiltradas: parcelasDoCliente.slice(0, periodo)
@@ -56,10 +56,12 @@ const PredefinedFilters = () => {
   };
 
   const obterMensagemDesabilitacao = (periodo: number) => {
-    const numeroDeParcelas = parcelas.length;
+    const numeroDeParcelas = dadosDoCliente ? (parcelasDoCliente?.length || 0) : parcelas.length;
+
     if (periodo > numeroDeParcelas) {
-      return `${numeroDeParcelas} parcela(s) disponíveis. Não é possível filtrar por ${periodo} meses.`;
-    }
+      const str = numeroDeParcelas === 1 ? 'mês' : 'meses';
+      return `${numeroDeParcelas} ${str} é o máximo disponível.`;
+    };
     return '';
   };
   

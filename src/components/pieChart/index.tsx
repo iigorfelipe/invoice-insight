@@ -11,7 +11,7 @@ const PieChartDisplay = () => {
     dadosDaFiltragemGeral: { parcelasFiltradas: parcelasGeral },
     coresDoGrafico,
     dadosDoCliente,
-    dadosDaFiltragemPorCliente: { parcelasFiltradas: parcelasCliente },
+    dadosDaFiltragemCliente: { parcelasFiltradas: parcelasCliente },
   } = useSettings();
   
   const { isSmDown, isMdDown } = useAppTheme();

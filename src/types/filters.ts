@@ -1,6 +1,6 @@
 import { Parcela, ParcelasPorMesAno } from "./data";
 
-export type DadosDaFiltragemPorCliente = {
+export type DadosDaFiltragemCliente = {
   total: number;
   periodo: string;
   parcelasFiltradas: Parcela[];

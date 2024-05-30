@@ -8,15 +8,15 @@ type PieChartInfoProps = {
   data: {
     id: number;
     value: number;
-    color: string | undefined;
+    color: string;
   }[];
 };
 
 const PieChartInfo = ({ data }: PieChartInfoProps ) => {
   const {
-    dadosDaFiltragemGeral: { parcelasFiltradas: parcelas },
+    dadosDaFiltragemGeral: { parcelasFiltradas: parcelasGeral },
     dadosDoCliente,
-    dadosDaFiltragemPorCliente: { parcelasFiltradas: parcelasDoCliente },
+    dadosDaFiltragemCliente: { parcelasFiltradas: parcelasCliente },
   } = useSettings();
 
   const { isSmDown } = useAppTheme();
@@ -41,7 +41,7 @@ const PieChartInfo = ({ data }: PieChartInfoProps ) => {
 
         <Typography sx={{ m: '0px auto 0px 5px'}}>
           {
-            dadosDoCliente ? parcelasDoCliente[0].mesNome : parcelas[0].mesNome
+            dadosDoCliente ? parcelasCliente[0].mesNome : parcelasGeral[0].mesNome
           }
         </Typography>
       

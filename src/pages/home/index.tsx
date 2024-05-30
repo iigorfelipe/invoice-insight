@@ -1,6 +1,6 @@
 import { Box, Link } from '@mui/material';
 import { useSettings } from '../../contexts/settings';
-import PieActiveArc from '../../components/pieChart';
+import PieChartDisplay from '../../components/pieChart';
 import { useAppTheme } from '../../contexts/theme';
 import MainList from '../../components/mainList';
 import MainButtonControllers from '../../components/mainButtonControllers';
@@ -22,7 +22,7 @@ const Home = () => {
         gap: '40px',
       }}
     >
-      {naoPossuiParcelas ? null : <PieActiveArc />}
+      {naoPossuiParcelas ? null : <PieChartDisplay />}
 
       <MainButtonControllers />
 
@@ -31,7 +31,6 @@ const Home = () => {
       <Link
         href="https://github.com/iigorfelipe/invoice-insight"
         target="_blank"
-        variant="h6"
         sx={{ display: 'flex', justifyContent: 'center' }}
       >
         Github do projeto

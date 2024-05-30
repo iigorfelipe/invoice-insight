@@ -2,6 +2,7 @@ import { Box, TextField } from '@mui/material';
 import { useAppTheme } from '../../contexts/theme';
 import { useSettings } from '../../contexts/settings';
 import FilterButtons from './filterButtons';
+import { obterDataFinal, obterDataInicial } from '../../helpers/getDatePeriod';
 
 const CustomizedFilter = () => {
   const {
@@ -9,22 +10,10 @@ const CustomizedFilter = () => {
     datas,
     setDatas,
     dadosDoCliente,
-    datas2,
-    setDatas2,
+    datasCliente,
+    setDatasCliente,
   } = useSettings();
   const { isSmDown } = useAppTheme();
-
-  const obterDataInicial = () => {
-    const date = new Date();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return `${year}-${month < 10 ? `0${month}` : month}`;
-  };
-
-  const obterDataFinal = () => {
-    const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
-    return `${ano}-${mes}`;
-  };
 
   return (
     <Box
@@ -38,11 +27,11 @@ const CustomizedFilter = () => {
     >
       <TextField
         type="month"
-        inputProps={{ min: obterDataInicial(), max: obterDataFinal() }}
+        inputProps={{ min: obterDataInicial(), max: obterDataFinal(parcelas) }}
         size="small"
         onChange={({ target: { value } }) => {
           if (dadosDoCliente) {
-            setDatas2((prev) => {
+            setDatasCliente((prev) => {
               return { ...prev, data1: value };
             });
           } else {
@@ -51,18 +40,18 @@ const CustomizedFilter = () => {
             });
           }
         }}
-        value={dadosDoCliente ? datas2.data1 : datas.data1}
+        value={dadosDoCliente ? datasCliente.data1 : datas.data1}
       />
 
       <FilterButtons />
 
       <TextField
         type="month"
-        inputProps={{ min: obterDataInicial(), max: obterDataFinal() }}
+        inputProps={{ min: obterDataInicial(), max: obterDataFinal(parcelas) }}
         size="small"
         onChange={({ target: { value } }) => {
           if (dadosDoCliente) {
-            setDatas2((prev) => {
+            setDatasCliente((prev) => {
               return { ...prev, data2: value };
             });
           } else {
@@ -71,7 +60,7 @@ const CustomizedFilter = () => {
             });
           }
         }}
-        value={dadosDoCliente ? datas2.data2 : datas.data2}
+        value={dadosDoCliente ? datasCliente.data2 : datas.data2}
       />
     </Box>
   );

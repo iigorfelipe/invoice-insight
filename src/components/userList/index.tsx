@@ -12,15 +12,15 @@ const UserList = () => {
   const {
     clientes,
     setDadosDoCliente,
-    dadosDaFiltragemPorCliente,
-    setDadosDaFiltragemPorCliente
+    dadosDaFiltragemCliente,
+    setDadosDaFiltragemCliente
   } = useSettings();
 
   const cliente = clientes.find((cliente) => cliente.idCliente === idCliente) as Cliente;
   const { parcelas } = cliente.faturas[0];
 
   useEffect(() => {
-    setDadosDaFiltragemPorCliente({
+    setDadosDaFiltragemCliente({
       total: parcelas[0].valorParcela * parcelas.length,
       periodo: `${parcelas[0].data} a ${parcelas.slice(-1)[0].data}`,
       parcelasFiltradas: parcelas
@@ -33,10 +33,10 @@ const UserList = () => {
   return (
     <FixedSizeList
       height={500}
-      itemCount={dadosDaFiltragemPorCliente.parcelasFiltradas.length}
+      itemCount={dadosDaFiltragemCliente.parcelasFiltradas.length}
       itemSize={60}
       width='100%'
-      itemData={dadosDaFiltragemPorCliente.parcelasFiltradas}
+      itemData={dadosDaFiltragemCliente.parcelasFiltradas}
     >
       {({ index, style, data }) => {
         const item = data[index];

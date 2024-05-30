@@ -1,8 +1,8 @@
 import { MouseEvent, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, IconButton, Popover } from '@mui/material';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import SettingsIcon from '@mui/icons-material/SettingsOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBackOutlined';
 import PopoverContent from '../popoverContent';
 import { useSettings } from '../../contexts/settings';
 
@@ -42,7 +42,7 @@ const Header = () => {
           aria-describedby={id}
           onClick={handleClick}
         >
-          {isHomePage ? <SettingsOutlinedIcon /> : <ArrowBackOutlinedIcon />}
+          {isHomePage ? <SettingsIcon /> : <ArrowBackIcon />}
         </IconButton>
 
         <Popover

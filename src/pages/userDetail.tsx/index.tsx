@@ -13,7 +13,7 @@ const UserDetails = () => {
   const {
     clientes,
     setDadosDoCliente,
-    setDadosDaFiltragemPorCliente
+    setDadosDaFiltragemCliente
   } = useSettings();
   const { isMdDown } = useAppTheme();
 
@@ -21,7 +21,7 @@ const UserDetails = () => {
   const { parcelas } = cliente.faturas[0];
 
   useEffect(() => {
-    setDadosDaFiltragemPorCliente({
+    setDadosDaFiltragemCliente({
       total: parcelas[0].valorParcela * parcelas.length,
       periodo: `${parcelas[0].data} a ${parcelas.slice(-1)[0].data}`,
       parcelasFiltradas: parcelas
