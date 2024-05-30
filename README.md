@@ -1,3 +1,8 @@
+<h1 align="center">
+  🔧  README AND PROJECT IN DEVELOPMENT 🔧 
+  <img width="100%" src="https://octodex.github.com/images/manufacturetocat.png" />
+</h1>
+
 ## Tecnologias Utilizadas
 
 - TypeScript
