@@ -15,7 +15,7 @@ const Header = () => {
   
   const navigate = useNavigate();
   const rotaAtual = useLocation();
-  const isHomePage = rotaAtual.pathname === '/';
+  const isHomePage = rotaAtual.pathname === '/invoice-insight';
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isHomePage) {
