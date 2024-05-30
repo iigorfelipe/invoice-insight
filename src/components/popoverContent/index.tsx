@@ -37,9 +37,9 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
       
       <ColorSession />
 
-      <Splitter />
+      {/* <Splitter />
   
-      <CurrencySession />
+      <CurrencySession /> */}
 
       <Splitter />
 
