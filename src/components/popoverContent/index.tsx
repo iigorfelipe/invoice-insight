@@ -4,7 +4,7 @@ import { useSettings } from '../../contexts/settings';
 import { obterCorContraste } from '../../helpers/randomColor';
 import PopoverHeader from './header';
 import ColorSession from './colorSession';
-import CurrencySession from './currencySession';
+// import CurrencySession from './currencySession';
 import SliderSession from './sliderSession';
 
 
