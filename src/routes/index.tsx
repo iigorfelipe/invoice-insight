@@ -5,9 +5,9 @@ import UserDetails from '../pages/userDetail.tsx';
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/invoice-insight" element={<Home />} />
+      <Route path="/invoice-insight/" element={<Home />} />
       <Route path="/user/:idCliente" element={<UserDetails />} />
-      <Route path="*" element={<Navigate to="/invoice-insight" />} />
+      <Route path="*" element={<Navigate to="/invoice-insight/" />} />
     </Routes>
   );
 };
