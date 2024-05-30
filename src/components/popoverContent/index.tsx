@@ -3,7 +3,7 @@ import Apply from '@mui/icons-material/AutoAwesomeOutlined';
 import { useSettings } from '../../contexts/settings';
 import { obterCorContraste } from '../../helpers/randomColor';
 import ColorSession from './colorSession';
-// import CurrencySession from './currencySession';
+import CurrencySession from './currencySession';
 import SliderSession from './sliderSession';
 
 
@@ -34,9 +34,9 @@ const PopoverContent = ({ handleClose }: PopoverContentProps) => {
       
       <ColorSession />
 
-      {/* <Splitter />
+      <Splitter />
   
-      <CurrencySession /> */}
+      <CurrencySession />
 
       <Splitter />
 

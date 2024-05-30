@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { Button, Box, Typography } from '@mui/material';
+import { Button, Box, Tooltip, Typography } from '@mui/material';
 import { moedas } from '../../mocks/moedas';
+import { useSettings } from '../../contexts/settings';
+import { obterCorContraste } from '../../helpers/randomColor';
 
+
+const TooltipTitle = () => <Typography>Em breve...</Typography>;
 
 const CurrencySession = () => {
   const [moedaEscolhida, setMoedaEscolhida] = useState(moedas[0]);
+  const { corGradiente } = useSettings();
 
   return (
     <Box
@@ -19,10 +24,6 @@ const CurrencySession = () => {
       }}
     >
 
-      <Box sx={{ display: 'flex' }}>
-        <Typography>Moeda: {moedaEscolhida}</Typography>
-      </Box>
-
       <Box
         sx={{
           display: 'grid',
@@ -33,14 +34,23 @@ const CurrencySession = () => {
       >
         {
           moedas.map((moeda) => (
-            <Button
-              key={moeda}
-              size='small'
-              variant='outlined'
-              onClick={() => setMoedaEscolhida(moeda)}
-            >
-              {moeda}
-            </Button>
+            <Tooltip key={moeda} title={moeda === moedas[0] ? '' : <TooltipTitle />}>
+              <span>
+                <Button
+                  key={moeda}
+                  size='small'
+                  variant='outlined'
+                  onClick={() => setMoedaEscolhida(moeda)}
+                  sx={{
+                    background: moeda === moedaEscolhida ? corGradiente : 'normal',
+                    color: moeda === moedaEscolhida ? obterCorContraste(corGradiente) : 'normal'
+                  }}
+                  disabled={moeda !== moedas[0]}
+                >
+                  {moeda}
+                </Button>
+              </span>
+            </Tooltip>
           ))
         }
       </Box>
