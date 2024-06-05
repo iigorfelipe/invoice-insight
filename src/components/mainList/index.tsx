@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { useSettings } from '../../contexts/settings';
 import { ParcelasPorMesAno } from '../../types/data';
-import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import { obterCorContraste } from '../../helpers/randomColor';
 import { useAppTheme } from '../../contexts/theme';
 
@@ -23,6 +22,7 @@ const MainList = () => {
   const [alturaDaLista, setAlturaDaLista] = useState(350);
   const {
     dadosDaFiltragemGeral: { parcelasFiltradas: parcelas },
+    obterNovoValor
   } = useSettings();
   const { isMdDown } = useAppTheme();
 
@@ -88,7 +88,7 @@ const MainList = () => {
                 <Tooltip
                   title={
                     <Typography>
-                      Total deste mês: {formatarValorParaMoedaBrasileira(item.valorTotalDasParcelas)}
+                      Total deste mês: {obterNovoValor(item.valorTotalDasParcelas)}
                     </Typography>
                   }
                   placement='bottom-start'
@@ -131,7 +131,7 @@ const MainList = () => {
                                 }}
                               >
                                 <Typography>
-                                  Total: {formatarValorParaMoedaBrasileira(+parcela.parcela.split('/')[1] * (parcela.valorParcela))}
+                                  Total: {obterNovoValor(+parcela.parcela.split('/')[1] * (parcela.valorParcela))}
                                 </Typography>
                               </Box>
                             }
@@ -184,7 +184,7 @@ const MainList = () => {
                         <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
 
                           <Typography>
-                            {formatarValorParaMoedaBrasileira(parcela.valorParcela)}
+                            {obterNovoValor(parcela.valorParcela)}
                           </Typography>
 
                         </Box>

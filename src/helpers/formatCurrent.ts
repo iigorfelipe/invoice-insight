@@ -1,13 +1,9 @@
-const formatarValorParaMoedaBrasileira = (valor: number): string => {
-  const preco = new Intl.NumberFormat('pt-br', {
-    currency: 'BRL',
+export const formatarValorParaMoeda = (valor: number, moeda: string, formato: string): string => {
+  const preco = new Intl.NumberFormat(formato, {
+    currency: moeda,
     style: 'currency',
     minimumFractionDigits: 2,
   });
 
-  return preco.format(+valor);
-}
-
-export {
-  formatarValorParaMoedaBrasileira
+  return preco.format(valor);
 };

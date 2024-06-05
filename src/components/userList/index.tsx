@@ -4,7 +4,6 @@ import { FixedSizeList } from 'react-window';
 import { Box } from "@mui/material";
 
 import { useSettings } from "../../contexts/settings";
-import { formatarValorParaMoedaBrasileira } from "../../helpers/formatCurrent";
 import { Cliente } from "../../types/data";
 
 const UserList = () => {
@@ -13,7 +12,8 @@ const UserList = () => {
     clientes,
     setDadosDoCliente,
     dadosDaFiltragemCliente,
-    setDadosDaFiltragemCliente
+    setDadosDaFiltragemCliente,
+    obterNovoValor
   } = useSettings();
 
   const cliente = clientes.find((cliente) => cliente.idCliente === idCliente) as Cliente;
@@ -53,7 +53,7 @@ const UserList = () => {
           >
             <Box>{item.data}</Box>
             <Box>{item.parcela}</Box>
-            <Box>{formatarValorParaMoedaBrasileira(item.valorParcela)}</Box>
+            <Box>{obterNovoValor(item.valorParcela)}</Box>
           </Box>
         )
       }}

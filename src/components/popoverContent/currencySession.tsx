@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Button, Box, Tooltip, Typography } from '@mui/material';
+import { Button, Box, Divider } from '@mui/material';
 import { moedas } from '../../mocks/moedas';
 import { useSettings } from '../../contexts/settings';
 import { obterCorContraste } from '../../helpers/randomColor';
 
-
-const TooltipTitle = () => <Typography>Em breve...</Typography>;
-
 const CurrencySession = () => {
-  const [moedaEscolhida, setMoedaEscolhida] = useState(moedas[0]);
-  const { corGradiente } = useSettings();
+  const {
+    coresDoGrafico: { corMesAtual, corProximasFaturas },
+    cambio: { origem, destino },
+    setCambio
+  } = useSettings();
+
 
   return (
     <Box
@@ -20,9 +20,31 @@ const CurrencySession = () => {
         alignItems: 'center',
         justifyContent: 'center',
         p: '25px 0px',
-        gap: '10px'
+        gap: '10px',
       }}
     >
+
+      <Box sx={{ display: 'flex', gap: '10px' }}>
+        {
+          moedas.slice(0, 3).map(({ codigo, label }) => (
+            <Button
+              key={codigo + label}
+              size='small'
+              variant='outlined'
+              onClick={() => setCambio((prev) => { return { ...prev, origem: codigo }})}
+              sx={{
+                background: codigo === origem ? corMesAtual : 'normal',
+                color: codigo === origem ? obterCorContraste(corMesAtual) : 'normal',
+                width: '50px', p: '0px', m: '0px'
+              }}
+            >
+              {codigo}
+            </Button>
+          ))
+        }
+      </Box>
+
+      <Divider flexItem />
 
       <Box
         sx={{
@@ -33,28 +55,23 @@ const CurrencySession = () => {
         }}
       >
         {
-          moedas.map((moeda) => (
-            <Tooltip key={moeda} title={moeda === moedas[0] ? '' : <TooltipTitle />}>
-              <span>
-                <Button
-                  key={moeda}
-                  size='small'
-                  variant='outlined'
-                  onClick={() => setMoedaEscolhida(moeda)}
-                  sx={{
-                    background: moeda === moedaEscolhida ? corGradiente : 'normal',
-                    color: moeda === moedaEscolhida ? obterCorContraste(corGradiente) : 'normal'
-                  }}
-                  disabled={moeda !== moedas[0]}
-                >
-                  {moeda}
-                </Button>
-              </span>
-            </Tooltip>
+          moedas.map(({ codigo, label }) => (
+            <Button
+              key={codigo + label}
+              size='small'
+              variant='outlined'
+              onClick={() => setCambio((prev) => { return { ...prev, destino: codigo }})}
+              sx={{
+                background: codigo === destino ? corProximasFaturas : 'normal',
+                color: codigo === destino ? obterCorContraste(corProximasFaturas) : 'normal',
+                width: '50px', p: '0px', m: '0px'
+              }}
+            >
+              {codigo}
+            </Button>
           ))
         }
       </Box>
-
     </Box>
   );
 };

@@ -1,6 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
 import OrbIcon from '@mui/icons-material/FiberManualRecord';
-import { formatarValorParaMoedaBrasileira } from '../../helpers/formatCurrent';
 import { useSettings } from '../../contexts/settings';
 import { useAppTheme } from '../../contexts/theme';
 
@@ -17,6 +16,7 @@ const PieChartInfo = ({ data }: PieChartInfoProps ) => {
     dadosDaFiltragemGeral: { parcelasFiltradas: parcelasGeral },
     dadosDoCliente,
     dadosDaFiltragemCliente: { parcelasFiltradas: parcelasCliente },
+    obterNovoValor
   } = useSettings();
 
   const { isSmDown } = useAppTheme();
@@ -47,7 +47,7 @@ const PieChartInfo = ({ data }: PieChartInfoProps ) => {
       
 
         <Typography>
-          {formatarValorParaMoedaBrasileira(data[0].value)}
+          {obterNovoValor(data[0].value)}
         </Typography>
 
       </Box>
@@ -68,7 +68,7 @@ const PieChartInfo = ({ data }: PieChartInfoProps ) => {
         </Typography>
 
         <Typography>
-          {formatarValorParaMoedaBrasileira(data[1].value)}
+          {obterNovoValor(data[1].value)}
         </Typography>
 
       </Box>
@@ -87,7 +87,7 @@ const PieChartInfo = ({ data }: PieChartInfoProps ) => {
         </Typography>
 
         <Typography sx={{ fontWeight: 600 }}>
-          {formatarValorParaMoedaBrasileira(data[0].value + data[1].value)}
+          {obterNovoValor(data[0].value + data[1].value)}
         </Typography>
 
       </Box>

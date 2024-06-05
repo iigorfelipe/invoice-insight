@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { SettingsContext } from "./context";
 import {
   coresIniciaisDoGrafico,
@@ -12,6 +12,9 @@ import useDynamicDataGenerator from "../../hooks/useDynamicDataGenerator";
 import { Cliente, ParcelasPorMesAno } from "../../types/data";
 import { DadosDaFiltragemGeral, DadosDaFiltragemCliente, DatasType } from "../../types/filters";
 import { valorTotalDasParcelas } from "../../helpers/reducer";
+import { Cambio, cambioInicial, moedas } from "../../mocks/moedas";
+import { formatarValorParaMoeda } from "../../helpers/formatCurrent";
+import { obterTaxaDecambio } from "../../fetchers/getExchangeRate";
 
 type Props = {
   children: ReactNode;
@@ -33,6 +36,50 @@ const SettingsProvider = ({ children }: Props) => {
   const [dadosDaFiltragemCliente, setDadosDaFiltragemCliente] = useState<DadosDaFiltragemCliente>(dadosIniciaisDaFiltragemCliente);
   const [filtroAtivoCliente, setFiltroAtivoCliente] = useState(0);
   const [datasCliente, setDatasCliente] = useState<DatasType>(datasIniciais);
+
+  const [cambio, setCambio] = useState<Cambio>(cambioInicial);
+
+  const obterNovoValor = useCallback((valor: number) => {
+    const { destino, taxa, formato } = cambio;
+    const novoTotal = valor * taxa;
+    return formatarValorParaMoeda(novoTotal, destino, formato);
+  }, [cambio.origem, cambio.destino, cambio.taxa, cambio.formato]);
+
+  useEffect(() => {
+    const { origem, destino } = cambio;
+
+    if (origem !== destino) {
+
+      const formatarValor = async () => {
+        const taxaOrigemDestino = await obterTaxaDecambio(cambio.origem, cambio.destino);
+
+        if (taxaOrigemDestino) {
+          let novoFormato = 'pt-BR';
+          let novaMoeda = 'BRL';
+
+          moedas.forEach((item) => {
+            if (item.codigo === cambio.destino) {
+              novoFormato = item.formato;
+              novaMoeda = item.codigo
+            };
+          });
+
+          setCambio((prev) => {
+            return {
+              ...prev,
+              destino: novaMoeda,
+              taxa: taxaOrigemDestino,
+              formato: novoFormato
+            }
+          });
+        };
+      };
+      formatarValor();
+
+    } else if (origem === destino) {
+      setCambio((prev) => { return { ...prev, taxa: 1 }})
+    };
+  }, [cambio.origem, cambio.destino]);
 
   const corGradiente = `linear-gradient(to right bottom, ${coresDoGrafico.corMesAtual}, ${coresDoGrafico.corProximasFaturas})`;
 
@@ -100,6 +147,8 @@ const SettingsProvider = ({ children }: Props) => {
     dadosDaFiltragemCliente, setDadosDaFiltragemCliente,
     filtroAtivoCliente, setFiltroAtivoCliente,
     datasCliente, setDatasCliente,
+    cambio, setCambio,
+    obterNovoValor
   };
 
   return (

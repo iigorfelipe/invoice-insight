@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { Cliente, ValoresMinMax, ParcelasPorMesAno } from "../../types/data";
 import { coresIniciaisDoGrafico, dadosIniciaisDaFiltragem, dadosIniciaisDaFiltragemCliente, datasIniciais, quantidadesIniciais } from "../../mocks/data";
 import { DadosDaFiltragemGeral, DadosDaFiltragemCliente, DatasType } from "../../types/filters";
+import { Cambio, cambioInicial } from "../../mocks/moedas";
 
 export type CoresDoGrafico = {
   corMesAtual: string;
@@ -51,6 +52,11 @@ export type DefaultSettingsContext = {
 
   datasCliente: DatasType;
   setDatasCliente: React.Dispatch<React.SetStateAction<DatasType>>;
+
+  cambio: Cambio;
+  setCambio: React.Dispatch<React.SetStateAction<Cambio>>;
+
+  obterNovoValor: (valor: number) => string;
 };
 
 export const defaultSettingsContext: DefaultSettingsContext = {
@@ -95,6 +101,11 @@ export const defaultSettingsContext: DefaultSettingsContext = {
 
   datasCliente: datasIniciais,
   setDatasCliente: () => {},
+
+  cambio: cambioInicial,
+  setCambio: () => {},
+
+  obterNovoValor: () => '',
 };
 
 export const SettingsContext = createContext<DefaultSettingsContext>(defaultSettingsContext);
