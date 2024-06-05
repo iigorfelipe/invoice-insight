@@ -43,6 +43,10 @@ npm run dev
 
 - node `v16.13.0` ou superior
 
+## Api
+
+- [awesomeapi](https://docs.awesomeapi.com.br/api-de-moedas#retorna-moedas-selecionadas-atualizado-a-cada-30-segundos)
+
 ## Autor
 
 - [Igor Felipe - Linkedin](https://www.linkedin.com/in/iigor-felipe/)
