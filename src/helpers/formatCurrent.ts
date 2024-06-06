@@ -3,7 +3,13 @@ export const formatarValorParaMoeda = (valor: number, moeda: string, formato: st
     currency: moeda,
     style: 'currency',
     minimumFractionDigits: 2,
-  });
+  }).format(valor);
 
-  return preco.format(valor);
+  if (moeda === 'CAD') {
+    return `CA${preco}`;
+  } else if (moeda === 'AUD') {
+    return `AU${preco}`;
+  } else {
+    return preco;
+  };
 };
