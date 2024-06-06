@@ -6,7 +6,7 @@ import { obterDataFinal, obterDataInicial } from '../../helpers/getDatePeriod';
 
 const CustomizedFilter = () => {
   const {
-    parcelas,
+    parcelas: parcelasGeral,
     datas,
     setDatas,
     dadosDoCliente,
@@ -14,6 +14,8 @@ const CustomizedFilter = () => {
     setDatasCliente,
   } = useSettings();
   const { isSmDown } = useAppTheme();
+
+  const parcelas = dadosDoCliente ? dadosDoCliente?.faturas[0].parcelas : parcelasGeral;
 
   return (
     <Box

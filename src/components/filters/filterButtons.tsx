@@ -6,12 +6,13 @@ import { useSettings } from '../../contexts/settings';
 import { obterCorContraste } from '../../helpers/randomColor';
 import { valorTotalDasParcelas } from '../../helpers/reducer';
 import { obterDataFinal, obterDataInicial } from '../../helpers/getDatePeriod';
+import { diferencaEmMeses } from '../../helpers/differenceInMonths';
 import { DatasType } from '../../types/filters';
 import { Parcela, ParcelasPorMesAno } from '../../types/data';
 
 const FilterButtons = () => {
   const {
-    parcelas,
+    parcelas: parcelasGeral,
     corGradiente,
     setDadosDaFiltragemGeral,
     filtroAtivo: filtroAtivoGeral,
@@ -33,7 +34,7 @@ const FilterButtons = () => {
   const filtroAtivo = dadosDoCliente ? filtroAtivoCliente : filtroAtivoGeral;
   const backgroundColor = dadosDoCliente ? dadosDoCliente.cor : corGradiente;
   const parcelasDoCliente = dadosDoCliente?.faturas[0].parcelas;
-
+  const parcelas = dadosDoCliente ? dadosDoCliente?.faturas[0].parcelas : parcelasGeral;
 
   useEffect(() => {
     const validateDates = () => {

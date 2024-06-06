@@ -1,4 +1,4 @@
-import { ParcelasPorMesAno } from '../types/data';
+import { Parcela, ParcelasPorMesAno } from '../types/data';
 
 export const obterDataInicial = () => {
   const date = new Date();
@@ -7,7 +7,7 @@ export const obterDataInicial = () => {
   return `${year}-${month < 10 ? `0${month}` : month}`;
 };
 
-export const obterDataFinal = (parcelas: ParcelasPorMesAno[]) => {
+export const obterDataFinal = (parcelas: ParcelasPorMesAno[] | Parcela[]) => {
   const [mes, ano] = parcelas.slice(-1)[0].data.split('/');
-  return `${ano}-${mes}`;
+  return `${ano}-${mes.padStart(2, '0')}`;
 };

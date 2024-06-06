@@ -1,4 +1,4 @@
-const diferencaEmMeses = (data1: string, data2: string): number => {
+export const diferencaEmMeses = (data1: string, data2: string): number => {
   const parseDate = (dataStr: string): Date => {
     const [mes, ano] = dataStr.split('/').map(Number);
     return new Date(ano, mes - 1);
