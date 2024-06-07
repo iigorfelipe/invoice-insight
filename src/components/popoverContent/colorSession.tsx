@@ -3,7 +3,16 @@ import { MuiColorInput } from 'mui-color-input';
 import { useSettings } from '../../contexts/settings';
 import { CoresDoGrafico } from '../../contexts/settings/context';
 
-const CORES = ['corMesAtual', 'corProximasFaturas'];
+const CORES = [
+  {
+    key: 'corMesAtual',
+    label: 'Mês atual'
+  },
+  {
+    key: 'corProximasFaturas',
+    label: 'Próximas faturas'
+  }
+];
 
 const ColorSession = () => {
 
@@ -17,10 +26,10 @@ const ColorSession = () => {
     <Box sx={{ display: 'flex', justifyContent: 'space-bewteen', p: '20px 0px', gap: '20px' }}>
 
       {
-        CORES.map((item) => (
+        CORES.map(({ key, label }) => (
           <MuiColorInput
-            key={item}
-            label='Mês atual'
+            key={key}
+            label={label}
             sx={{
               maxWidth: '170px',
               "& label.Mui-focused": {
@@ -28,19 +37,19 @@ const ColorSession = () => {
               },
               "& .MuiOutlinedInput-root": {
                 "&:hover fieldset": {
-                  borderColor: coresDoGrafico[item as unknown as keyof CoresDoGrafico] 
+                  borderColor: coresDoGrafico[key as unknown as keyof CoresDoGrafico] 
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: coresDoGrafico[item as unknown as keyof CoresDoGrafico]
+                  borderColor: coresDoGrafico[key as unknown as keyof CoresDoGrafico]
                 }
               }
             }}
             format="hex8"
-            value={coresDoGrafico[item as unknown as keyof CoresDoGrafico]}        
+            value={coresDoGrafico[key as unknown as keyof CoresDoGrafico]}        
             onChange={(value) => setCoresDoGrafico((prevColors) => {
               return {
                 ...prevColors,
-                [item]: value
+                [key]: value
               }
             })}
           />
